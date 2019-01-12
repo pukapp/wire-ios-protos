@@ -173,14 +173,14 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 #define GenericMessage_confirmation @"confirmation"
 #define GenericMessage_reaction @"reaction"
 #define GenericMessage_ephemeral @"ephemeral"
-#define GenericMessage_availability @"availability"
 #define GenericMessage_textJson @"textJson"
+#define GenericMessage_availability @"availability"
 @interface ZMGenericMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasMessageId_:1;
   BOOL hasAsset_:1;
-  BOOL hasTextJson_:1;
   BOOL hasAvailability_:1;
+  BOOL hasTextJson_:1;
   BOOL hasEphemeral_:1;
   BOOL hasReaction_:1;
   BOOL hasConfirmation_:1;
@@ -198,8 +198,8 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
   BOOL hasClientAction_:1;
   NSString* messageId;
   ZMAsset* asset;
-  ZMTextJson* textJson;
   ZMAvailability* availability;
+  ZMTextJson* textJson;
   ZMEphemeral* ephemeral;
   ZMReaction* reaction;
   ZMConfirmation* confirmation;
@@ -233,8 +233,8 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (BOOL) hasConfirmation;
 - (BOOL) hasReaction;
 - (BOOL) hasEphemeral;
-- (BOOL) hasAvailability;
 - (BOOL) hasTextJson;
+- (BOOL) hasAvailability;
 @property (readonly, strong) NSString* messageId;
 @property (readonly, strong) ZMText* text;
 @property (readonly, strong) ZMImageAsset* image;
@@ -252,8 +252,8 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 @property (readonly, strong) ZMConfirmation* confirmation;
 @property (readonly, strong) ZMReaction* reaction;
 @property (readonly, strong) ZMEphemeral* ephemeral;
-@property (readonly, strong) ZMAvailability* availability;
 @property (readonly, strong) ZMTextJson* textJson;
+@property (readonly, strong) ZMAvailability* availability;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -405,19 +405,19 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMGenericMessageBuilder*) mergeEphemeral:(ZMEphemeral*) value;
 - (ZMGenericMessageBuilder*) clearEphemeral;
 
-- (BOOL) hasAvailability;
-- (ZMAvailability*) availability;
-- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value;
-- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue;
-- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value;
-- (ZMGenericMessageBuilder*) clearAvailability;
-
 - (BOOL) hasTextJson;
 - (ZMTextJson*) textJson;
 - (ZMGenericMessageBuilder*) setTextJson:(ZMTextJson*) value;
 - (ZMGenericMessageBuilder*) setTextJsonBuilder:(ZMTextJsonBuilder*) builderForValue;
 - (ZMGenericMessageBuilder*) mergeTextJson:(ZMTextJson*) value;
 - (ZMGenericMessageBuilder*) clearTextJson;
+
+- (BOOL) hasAvailability;
+- (ZMAvailability*) availability;
+- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value;
+- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue;
+- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value;
+- (ZMGenericMessageBuilder*) clearAvailability;
 @end
 
 #define TextJson_content @"content"

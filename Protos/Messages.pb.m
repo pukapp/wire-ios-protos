@@ -76,8 +76,8 @@ NSString *NSStringFromZMEncryptionAlgorithm(ZMEncryptionAlgorithm value) {
 @property (strong) ZMConfirmation* confirmation;
 @property (strong) ZMReaction* reaction;
 @property (strong) ZMEphemeral* ephemeral;
-@property (strong) ZMAvailability* availability;
 @property (strong) ZMTextJson* textJson;
+@property (strong) ZMAvailability* availability;
 @end
 
 @implementation ZMGenericMessage
@@ -201,13 +201,6 @@ NSString *NSStringFromZMEncryptionAlgorithm(ZMEncryptionAlgorithm value) {
   hasEphemeral_ = !!_value_;
 }
 @synthesize ephemeral;
-- (BOOL) hasAvailability {
-  return !!hasAvailability_;
-}
-- (void) setHasAvailability:(BOOL) _value_ {
-  hasAvailability_ = !!_value_;
-}
-@synthesize availability;
 - (BOOL) hasTextJson {
   return !!hasTextJson_;
 }
@@ -215,6 +208,13 @@ NSString *NSStringFromZMEncryptionAlgorithm(ZMEncryptionAlgorithm value) {
   hasTextJson_ = !!_value_;
 }
 @synthesize textJson;
+- (BOOL) hasAvailability {
+  return !!hasAvailability_;
+}
+- (void) setHasAvailability:(BOOL) _value_ {
+  hasAvailability_ = !!_value_;
+}
+@synthesize availability;
 - (instancetype) init {
   if ((self = [super init])) {
     self.messageId = @"";
@@ -234,8 +234,8 @@ NSString *NSStringFromZMEncryptionAlgorithm(ZMEncryptionAlgorithm value) {
     self.confirmation = [ZMConfirmation defaultInstance];
     self.reaction = [ZMReaction defaultInstance];
     self.ephemeral = [ZMEphemeral defaultInstance];
-    self.availability = [ZMAvailability defaultInstance];
     self.textJson = [ZMTextJson defaultInstance];
+    self.availability = [ZMAvailability defaultInstance];
   }
   return self;
 }
@@ -330,13 +330,13 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       return NO;
     }
   }
-  if (self.hasAvailability) {
-    if (!self.availability.isInitialized) {
+  if (self.hasTextJson) {
+    if (!self.textJson.isInitialized) {
       return NO;
     }
   }
-  if (self.hasTextJson) {
-    if (!self.textJson.isInitialized) {
+  if (self.hasAvailability) {
+    if (!self.availability.isInitialized) {
       return NO;
     }
   }
@@ -394,11 +394,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasEphemeral) {
     [output writeMessage:18 value:self.ephemeral];
   }
-  if (self.hasAvailability) {
-    [output writeMessage:19 value:self.availability];
-  }
   if (self.hasTextJson) {
-    [output writeMessage:100 value:self.textJson];
+    [output writeMessage:19 value:self.textJson];
+  }
+  if (self.hasAvailability) {
+    [output writeMessage:100 value:self.availability];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -460,11 +460,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasEphemeral) {
     size_ += computeMessageSize(18, self.ephemeral);
   }
-  if (self.hasAvailability) {
-    size_ += computeMessageSize(19, self.availability);
-  }
   if (self.hasTextJson) {
-    size_ += computeMessageSize(100, self.textJson);
+    size_ += computeMessageSize(19, self.textJson);
+  }
+  if (self.hasAvailability) {
+    size_ += computeMessageSize(100, self.availability);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -597,15 +597,15 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
-  if (self.hasAvailability) {
-    [output appendFormat:@"%@%@ {\n", indent, @"availability"];
-    [self.availability writeDescriptionTo:output
-                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
-    [output appendFormat:@"%@}\n", indent];
-  }
   if (self.hasTextJson) {
     [output appendFormat:@"%@%@ {\n", indent, @"textJson"];
     [self.textJson writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  if (self.hasAvailability) {
+    [output appendFormat:@"%@%@ {\n", indent, @"availability"];
+    [self.availability writeDescriptionTo:output
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
@@ -693,15 +693,15 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
    [self.ephemeral storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"ephemeral"];
   }
-  if (self.hasAvailability) {
-   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
-   [self.availability storeInDictionary:messageDictionary];
-   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"availability"];
-  }
   if (self.hasTextJson) {
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
    [self.textJson storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"textJson"];
+  }
+  if (self.hasAvailability) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.availability storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"availability"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -748,10 +748,10 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       (!self.hasReaction || [self.reaction isEqual:otherMessage.reaction]) &&
       self.hasEphemeral == otherMessage.hasEphemeral &&
       (!self.hasEphemeral || [self.ephemeral isEqual:otherMessage.ephemeral]) &&
-      self.hasAvailability == otherMessage.hasAvailability &&
-      (!self.hasAvailability || [self.availability isEqual:otherMessage.availability]) &&
       self.hasTextJson == otherMessage.hasTextJson &&
       (!self.hasTextJson || [self.textJson isEqual:otherMessage.textJson]) &&
+      self.hasAvailability == otherMessage.hasAvailability &&
+      (!self.hasAvailability || [self.availability isEqual:otherMessage.availability]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -807,11 +807,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasEphemeral) {
     hashCode = hashCode * 31 + [self.ephemeral hash];
   }
-  if (self.hasAvailability) {
-    hashCode = hashCode * 31 + [self.availability hash];
-  }
   if (self.hasTextJson) {
     hashCode = hashCode * 31 + [self.textJson hash];
+  }
+  if (self.hasAvailability) {
+    hashCode = hashCode * 31 + [self.availability hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -907,11 +907,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (other.hasEphemeral) {
     [self mergeEphemeral:other.ephemeral];
   }
-  if (other.hasAvailability) {
-    [self mergeAvailability:other.availability];
-  }
   if (other.hasTextJson) {
     [self mergeTextJson:other.textJson];
+  }
+  if (other.hasAvailability) {
+    [self mergeAvailability:other.availability];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1083,21 +1083,21 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
         break;
       }
       case 154: {
-        ZMAvailabilityBuilder* subBuilder = [ZMAvailability builder];
-        if (self.hasAvailability) {
-          [subBuilder mergeFrom:self.availability];
-        }
-        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-        [self setAvailability:[subBuilder buildPartial]];
-        break;
-      }
-      case 802: {
         ZMTextJsonBuilder* subBuilder = [ZMTextJson builder];
         if (self.hasTextJson) {
           [subBuilder mergeFrom:self.textJson];
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setTextJson:[subBuilder buildPartial]];
+        break;
+      }
+      case 802: {
+        ZMAvailabilityBuilder* subBuilder = [ZMAvailability builder];
+        if (self.hasAvailability) {
+          [subBuilder mergeFrom:self.availability];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setAvailability:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1585,36 +1585,6 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   resultGenericMessage.ephemeral = [ZMEphemeral defaultInstance];
   return self;
 }
-- (BOOL) hasAvailability {
-  return resultGenericMessage.hasAvailability;
-}
-- (ZMAvailability*) availability {
-  return resultGenericMessage.availability;
-}
-- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value {
-  resultGenericMessage.hasAvailability = YES;
-  resultGenericMessage.availability = value;
-  return self;
-}
-- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue {
-  return [self setAvailability:[builderForValue build]];
-}
-- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value {
-  if (resultGenericMessage.hasAvailability &&
-      resultGenericMessage.availability != [ZMAvailability defaultInstance]) {
-    resultGenericMessage.availability =
-      [[[ZMAvailability builderWithPrototype:resultGenericMessage.availability] mergeFrom:value] buildPartial];
-  } else {
-    resultGenericMessage.availability = value;
-  }
-  resultGenericMessage.hasAvailability = YES;
-  return self;
-}
-- (ZMGenericMessageBuilder*) clearAvailability {
-  resultGenericMessage.hasAvailability = NO;
-  resultGenericMessage.availability = [ZMAvailability defaultInstance];
-  return self;
-}
 - (BOOL) hasTextJson {
   return resultGenericMessage.hasTextJson;
 }
@@ -1643,6 +1613,36 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
 - (ZMGenericMessageBuilder*) clearTextJson {
   resultGenericMessage.hasTextJson = NO;
   resultGenericMessage.textJson = [ZMTextJson defaultInstance];
+  return self;
+}
+- (BOOL) hasAvailability {
+  return resultGenericMessage.hasAvailability;
+}
+- (ZMAvailability*) availability {
+  return resultGenericMessage.availability;
+}
+- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value {
+  resultGenericMessage.hasAvailability = YES;
+  resultGenericMessage.availability = value;
+  return self;
+}
+- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue {
+  return [self setAvailability:[builderForValue build]];
+}
+- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value {
+  if (resultGenericMessage.hasAvailability &&
+      resultGenericMessage.availability != [ZMAvailability defaultInstance]) {
+    resultGenericMessage.availability =
+      [[[ZMAvailability builderWithPrototype:resultGenericMessage.availability] mergeFrom:value] buildPartial];
+  } else {
+    resultGenericMessage.availability = value;
+  }
+  resultGenericMessage.hasAvailability = YES;
+  return self;
+}
+- (ZMGenericMessageBuilder*) clearAvailability {
+  resultGenericMessage.hasAvailability = NO;
+  resultGenericMessage.availability = [ZMAvailability defaultInstance];
   return self;
 }
 @end
