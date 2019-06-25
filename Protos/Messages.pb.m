@@ -58,6 +58,26 @@ NSString *NSStringFromZMEncryptionAlgorithm(ZMEncryptionAlgorithm value) {
   }
 }
 
+BOOL ZMLegalHoldStatusIsValidValue(ZMLegalHoldStatus value) {
+  switch (value) {
+    case ZMLegalHoldStatusDISABLED:
+    case ZMLegalHoldStatusENABLED:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
+  switch (value) {
+    case ZMLegalHoldStatusDISABLED:
+      return @"ZMLegalHoldStatusDISABLED";
+    case ZMLegalHoldStatusENABLED:
+      return @"ZMLegalHoldStatusENABLED";
+    default:
+      return nil;
+  }
+}
+
 @interface ZMGenericMessage ()
 @property (strong) NSString* messageId;
 @property (strong) ZMText* text;
@@ -2700,6 +2720,8 @@ static ZMEphemeral* defaultZMEphemeralInstance = nil;
 @property (strong) NSMutableArray<ZMLinkPreview*> * linkPreviewArray;
 @property (strong) NSMutableArray<ZMMention*> * mentionsArray;
 @property (strong) ZMQuote* quote;
+@property BOOL expectsReadConfirmation;
+@property ZMLegalHoldStatus legalHoldStatus;
 @end
 
 @implementation ZMText
@@ -2722,10 +2744,31 @@ static ZMEphemeral* defaultZMEphemeralInstance = nil;
   hasQuote_ = !!_value_;
 }
 @synthesize quote;
+- (BOOL) hasExpectsReadConfirmation {
+  return !!hasExpectsReadConfirmation_;
+}
+- (void) setHasExpectsReadConfirmation:(BOOL) _value_ {
+  hasExpectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) expectsReadConfirmation {
+  return !!expectsReadConfirmation_;
+}
+- (void) setExpectsReadConfirmation:(BOOL) _value_ {
+  expectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) hasLegalHoldStatus {
+  return !!hasLegalHoldStatus_;
+}
+- (void) setHasLegalHoldStatus:(BOOL) _value_ {
+  hasLegalHoldStatus_ = !!_value_;
+}
+@synthesize legalHoldStatus;
 - (instancetype) init {
   if ((self = [super init])) {
     self.content = @"";
     self.quote = [ZMQuote defaultInstance];
+    self.expectsReadConfirmation = NO;
+    self.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   }
   return self;
 }
@@ -2793,6 +2836,12 @@ static ZMText* defaultZMTextInstance = nil;
   if (self.hasQuote) {
     [output writeMessage:5 value:self.quote];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output writeBool:6 value:self.expectsReadConfirmation];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output writeEnum:7 value:self.legalHoldStatus];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -2813,6 +2862,12 @@ static ZMText* defaultZMTextInstance = nil;
   }];
   if (self.hasQuote) {
     size_ += computeMessageSize(5, self.quote);
+  }
+  if (self.hasExpectsReadConfirmation) {
+    size_ += computeBoolSize(6, self.expectsReadConfirmation);
+  }
+  if (self.hasLegalHoldStatus) {
+    size_ += computeEnumSize(7, self.legalHoldStatus);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -2870,6 +2925,12 @@ static ZMText* defaultZMTextInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expectsReadConfirmation", [NSNumber numberWithBool:self.expectsReadConfirmation]];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"legalHoldStatus", NSStringFromZMLegalHoldStatus(self.legalHoldStatus)];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -2891,6 +2952,12 @@ static ZMText* defaultZMTextInstance = nil;
    [self.quote storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"quote"];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [dictionary setObject: [NSNumber numberWithBool:self.expectsReadConfirmation] forKey: @"expectsReadConfirmation"];
+  }
+  if (self.hasLegalHoldStatus) {
+    [dictionary setObject: @(self.legalHoldStatus) forKey: @"legalHoldStatus"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -2908,6 +2975,10 @@ static ZMText* defaultZMTextInstance = nil;
       [self.mentionsArray isEqualToArray:otherMessage.mentionsArray] &&
       self.hasQuote == otherMessage.hasQuote &&
       (!self.hasQuote || [self.quote isEqual:otherMessage.quote]) &&
+      self.hasExpectsReadConfirmation == otherMessage.hasExpectsReadConfirmation &&
+      (!self.hasExpectsReadConfirmation || self.expectsReadConfirmation == otherMessage.expectsReadConfirmation) &&
+      self.hasLegalHoldStatus == otherMessage.hasLegalHoldStatus &&
+      (!self.hasLegalHoldStatus || self.legalHoldStatus == otherMessage.legalHoldStatus) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -2923,6 +2994,12 @@ static ZMText* defaultZMTextInstance = nil;
   }];
   if (self.hasQuote) {
     hashCode = hashCode * 31 + [self.quote hash];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.expectsReadConfirmation] hash];
+  }
+  if (self.hasLegalHoldStatus) {
+    hashCode = hashCode * 31 + self.legalHoldStatus;
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -2987,6 +3064,12 @@ static ZMText* defaultZMTextInstance = nil;
   if (other.hasQuote) {
     [self mergeQuote:other.quote];
   }
+  if (other.hasExpectsReadConfirmation) {
+    [self setExpectsReadConfirmation:other.expectsReadConfirmation];
+  }
+  if (other.hasLegalHoldStatus) {
+    [self setLegalHoldStatus:other.legalHoldStatus];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3031,6 +3114,19 @@ static ZMText* defaultZMTextInstance = nil;
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setQuote:[subBuilder buildPartial]];
+        break;
+      }
+      case 48: {
+        [self setExpectsReadConfirmation:[input readBool]];
+        break;
+      }
+      case 56: {
+        ZMLegalHoldStatus value = (ZMLegalHoldStatus)[input readEnum];
+        if (ZMLegalHoldStatusIsValidValue(value)) {
+          [self setLegalHoldStatus:value];
+        } else {
+          [unknownFields mergeVarintField:7 value:value];
+        }
         break;
       }
     }
@@ -3124,10 +3220,44 @@ static ZMText* defaultZMTextInstance = nil;
   resultText.quote = [ZMQuote defaultInstance];
   return self;
 }
+- (BOOL) hasExpectsReadConfirmation {
+  return resultText.hasExpectsReadConfirmation;
+}
+- (BOOL) expectsReadConfirmation {
+  return resultText.expectsReadConfirmation;
+}
+- (ZMTextBuilder*) setExpectsReadConfirmation:(BOOL) value {
+  resultText.hasExpectsReadConfirmation = YES;
+  resultText.expectsReadConfirmation = value;
+  return self;
+}
+- (ZMTextBuilder*) clearExpectsReadConfirmation {
+  resultText.hasExpectsReadConfirmation = NO;
+  resultText.expectsReadConfirmation = NO;
+  return self;
+}
+- (BOOL) hasLegalHoldStatus {
+  return resultText.hasLegalHoldStatus;
+}
+- (ZMLegalHoldStatus) legalHoldStatus {
+  return resultText.legalHoldStatus;
+}
+- (ZMTextBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value {
+  resultText.hasLegalHoldStatus = YES;
+  resultText.legalHoldStatus = value;
+  return self;
+}
+- (ZMTextBuilder*) clearLegalHoldStatus {
+  resultText.hasLegalHoldStatus = NO;
+  resultText.legalHoldStatus = ZMLegalHoldStatusDISABLED;
+  return self;
+}
 @end
 
 @interface ZMKnock ()
 @property BOOL hotKnock;
+@property BOOL expectsReadConfirmation;
+@property ZMLegalHoldStatus legalHoldStatus;
 @end
 
 @implementation ZMKnock
@@ -3144,9 +3274,30 @@ static ZMText* defaultZMTextInstance = nil;
 - (void) setHotKnock:(BOOL) _value_ {
   hotKnock_ = !!_value_;
 }
+- (BOOL) hasExpectsReadConfirmation {
+  return !!hasExpectsReadConfirmation_;
+}
+- (void) setHasExpectsReadConfirmation:(BOOL) _value_ {
+  hasExpectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) expectsReadConfirmation {
+  return !!expectsReadConfirmation_;
+}
+- (void) setExpectsReadConfirmation:(BOOL) _value_ {
+  expectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) hasLegalHoldStatus {
+  return !!hasLegalHoldStatus_;
+}
+- (void) setHasLegalHoldStatus:(BOOL) _value_ {
+  hasLegalHoldStatus_ = !!_value_;
+}
+@synthesize legalHoldStatus;
 - (instancetype) init {
   if ((self = [super init])) {
     self.hotKnock = NO;
+    self.expectsReadConfirmation = NO;
+    self.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   }
   return self;
 }
@@ -3172,6 +3323,12 @@ static ZMKnock* defaultZMKnockInstance = nil;
   if (self.hasHotKnock) {
     [output writeBool:1 value:self.hotKnock];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output writeBool:2 value:self.expectsReadConfirmation];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output writeEnum:3 value:self.legalHoldStatus];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -3183,6 +3340,12 @@ static ZMKnock* defaultZMKnockInstance = nil;
   size_ = 0;
   if (self.hasHotKnock) {
     size_ += computeBoolSize(1, self.hotKnock);
+  }
+  if (self.hasExpectsReadConfirmation) {
+    size_ += computeBoolSize(2, self.expectsReadConfirmation);
+  }
+  if (self.hasLegalHoldStatus) {
+    size_ += computeEnumSize(3, self.legalHoldStatus);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3222,11 +3385,23 @@ static ZMKnock* defaultZMKnockInstance = nil;
   if (self.hasHotKnock) {
     [output appendFormat:@"%@%@: %@\n", indent, @"hotKnock", [NSNumber numberWithBool:self.hotKnock]];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expectsReadConfirmation", [NSNumber numberWithBool:self.expectsReadConfirmation]];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"legalHoldStatus", NSStringFromZMLegalHoldStatus(self.legalHoldStatus)];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
   if (self.hasHotKnock) {
     [dictionary setObject: [NSNumber numberWithBool:self.hotKnock] forKey: @"hotKnock"];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    [dictionary setObject: [NSNumber numberWithBool:self.expectsReadConfirmation] forKey: @"expectsReadConfirmation"];
+  }
+  if (self.hasLegalHoldStatus) {
+    [dictionary setObject: @(self.legalHoldStatus) forKey: @"legalHoldStatus"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -3241,12 +3416,22 @@ static ZMKnock* defaultZMKnockInstance = nil;
   return
       self.hasHotKnock == otherMessage.hasHotKnock &&
       (!self.hasHotKnock || self.hotKnock == otherMessage.hotKnock) &&
+      self.hasExpectsReadConfirmation == otherMessage.hasExpectsReadConfirmation &&
+      (!self.hasExpectsReadConfirmation || self.expectsReadConfirmation == otherMessage.expectsReadConfirmation) &&
+      self.hasLegalHoldStatus == otherMessage.hasLegalHoldStatus &&
+      (!self.hasLegalHoldStatus || self.legalHoldStatus == otherMessage.legalHoldStatus) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
   if (self.hasHotKnock) {
     hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.hotKnock] hash];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.expectsReadConfirmation] hash];
+  }
+  if (self.hasLegalHoldStatus) {
+    hashCode = hashCode * 31 + self.legalHoldStatus;
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3294,6 +3479,12 @@ static ZMKnock* defaultZMKnockInstance = nil;
   if (other.hasHotKnock) {
     [self setHotKnock:other.hotKnock];
   }
+  if (other.hasExpectsReadConfirmation) {
+    [self setExpectsReadConfirmation:other.expectsReadConfirmation];
+  }
+  if (other.hasLegalHoldStatus) {
+    [self setLegalHoldStatus:other.legalHoldStatus];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3319,6 +3510,19 @@ static ZMKnock* defaultZMKnockInstance = nil;
         [self setHotKnock:[input readBool]];
         break;
       }
+      case 16: {
+        [self setExpectsReadConfirmation:[input readBool]];
+        break;
+      }
+      case 24: {
+        ZMLegalHoldStatus value = (ZMLegalHoldStatus)[input readEnum];
+        if (ZMLegalHoldStatusIsValidValue(value)) {
+          [self setLegalHoldStatus:value];
+        } else {
+          [unknownFields mergeVarintField:3 value:value];
+        }
+        break;
+      }
     }
   }
 }
@@ -3336,6 +3540,38 @@ static ZMKnock* defaultZMKnockInstance = nil;
 - (ZMKnockBuilder*) clearHotKnock {
   resultKnock.hasHotKnock = NO;
   resultKnock.hotKnock = NO;
+  return self;
+}
+- (BOOL) hasExpectsReadConfirmation {
+  return resultKnock.hasExpectsReadConfirmation;
+}
+- (BOOL) expectsReadConfirmation {
+  return resultKnock.expectsReadConfirmation;
+}
+- (ZMKnockBuilder*) setExpectsReadConfirmation:(BOOL) value {
+  resultKnock.hasExpectsReadConfirmation = YES;
+  resultKnock.expectsReadConfirmation = value;
+  return self;
+}
+- (ZMKnockBuilder*) clearExpectsReadConfirmation {
+  resultKnock.hasExpectsReadConfirmation = NO;
+  resultKnock.expectsReadConfirmation = NO;
+  return self;
+}
+- (BOOL) hasLegalHoldStatus {
+  return resultKnock.hasLegalHoldStatus;
+}
+- (ZMLegalHoldStatus) legalHoldStatus {
+  return resultKnock.legalHoldStatus;
+}
+- (ZMKnockBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value {
+  resultKnock.hasLegalHoldStatus = YES;
+  resultKnock.legalHoldStatus = value;
+  return self;
+}
+- (ZMKnockBuilder*) clearLegalHoldStatus {
+  resultKnock.hasLegalHoldStatus = NO;
+  resultKnock.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   return self;
 }
 @end
@@ -6816,6 +7052,8 @@ NSString *NSStringFromZMConfirmationType(ZMConfirmationType value) {
 @property Float32 latitude;
 @property (strong) NSString* name;
 @property SInt32 zoom;
+@property BOOL expectsReadConfirmation;
+@property ZMLegalHoldStatus legalHoldStatus;
 @end
 
 @implementation ZMLocation
@@ -6848,12 +7086,33 @@ NSString *NSStringFromZMConfirmationType(ZMConfirmationType value) {
   hasZoom_ = !!_value_;
 }
 @synthesize zoom;
+- (BOOL) hasExpectsReadConfirmation {
+  return !!hasExpectsReadConfirmation_;
+}
+- (void) setHasExpectsReadConfirmation:(BOOL) _value_ {
+  hasExpectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) expectsReadConfirmation {
+  return !!expectsReadConfirmation_;
+}
+- (void) setExpectsReadConfirmation:(BOOL) _value_ {
+  expectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) hasLegalHoldStatus {
+  return !!hasLegalHoldStatus_;
+}
+- (void) setHasLegalHoldStatus:(BOOL) _value_ {
+  hasLegalHoldStatus_ = !!_value_;
+}
+@synthesize legalHoldStatus;
 - (instancetype) init {
   if ((self = [super init])) {
     self.longitude = 0;
     self.latitude = 0;
     self.name = @"";
     self.zoom = 0;
+    self.expectsReadConfirmation = NO;
+    self.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   }
   return self;
 }
@@ -6891,6 +7150,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   if (self.hasZoom) {
     [output writeInt32:4 value:self.zoom];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output writeBool:5 value:self.expectsReadConfirmation];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output writeEnum:6 value:self.legalHoldStatus];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -6911,6 +7176,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   }
   if (self.hasZoom) {
     size_ += computeInt32Size(4, self.zoom);
+  }
+  if (self.hasExpectsReadConfirmation) {
+    size_ += computeBoolSize(5, self.expectsReadConfirmation);
+  }
+  if (self.hasLegalHoldStatus) {
+    size_ += computeEnumSize(6, self.legalHoldStatus);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -6959,6 +7230,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   if (self.hasZoom) {
     [output appendFormat:@"%@%@: %@\n", indent, @"zoom", [NSNumber numberWithInteger:self.zoom]];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expectsReadConfirmation", [NSNumber numberWithBool:self.expectsReadConfirmation]];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"legalHoldStatus", NSStringFromZMLegalHoldStatus(self.legalHoldStatus)];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -6973,6 +7250,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   }
   if (self.hasZoom) {
     [dictionary setObject: [NSNumber numberWithInteger:self.zoom] forKey: @"zoom"];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    [dictionary setObject: [NSNumber numberWithBool:self.expectsReadConfirmation] forKey: @"expectsReadConfirmation"];
+  }
+  if (self.hasLegalHoldStatus) {
+    [dictionary setObject: @(self.legalHoldStatus) forKey: @"legalHoldStatus"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -6993,6 +7276,10 @@ static ZMLocation* defaultZMLocationInstance = nil;
       (!self.hasName || [self.name isEqual:otherMessage.name]) &&
       self.hasZoom == otherMessage.hasZoom &&
       (!self.hasZoom || self.zoom == otherMessage.zoom) &&
+      self.hasExpectsReadConfirmation == otherMessage.hasExpectsReadConfirmation &&
+      (!self.hasExpectsReadConfirmation || self.expectsReadConfirmation == otherMessage.expectsReadConfirmation) &&
+      self.hasLegalHoldStatus == otherMessage.hasLegalHoldStatus &&
+      (!self.hasLegalHoldStatus || self.legalHoldStatus == otherMessage.legalHoldStatus) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -7008,6 +7295,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   }
   if (self.hasZoom) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.zoom] hash];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.expectsReadConfirmation] hash];
+  }
+  if (self.hasLegalHoldStatus) {
+    hashCode = hashCode * 31 + self.legalHoldStatus;
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -7064,6 +7357,12 @@ static ZMLocation* defaultZMLocationInstance = nil;
   if (other.hasZoom) {
     [self setZoom:other.zoom];
   }
+  if (other.hasExpectsReadConfirmation) {
+    [self setExpectsReadConfirmation:other.expectsReadConfirmation];
+  }
+  if (other.hasLegalHoldStatus) {
+    [self setLegalHoldStatus:other.legalHoldStatus];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -7099,6 +7398,19 @@ static ZMLocation* defaultZMLocationInstance = nil;
       }
       case 32: {
         [self setZoom:[input readInt32]];
+        break;
+      }
+      case 40: {
+        [self setExpectsReadConfirmation:[input readBool]];
+        break;
+      }
+      case 48: {
+        ZMLegalHoldStatus value = (ZMLegalHoldStatus)[input readEnum];
+        if (ZMLegalHoldStatusIsValidValue(value)) {
+          [self setLegalHoldStatus:value];
+        } else {
+          [unknownFields mergeVarintField:6 value:value];
+        }
         break;
       }
     }
@@ -7166,6 +7478,38 @@ static ZMLocation* defaultZMLocationInstance = nil;
 - (ZMLocationBuilder*) clearZoom {
   resultLocation.hasZoom = NO;
   resultLocation.zoom = 0;
+  return self;
+}
+- (BOOL) hasExpectsReadConfirmation {
+  return resultLocation.hasExpectsReadConfirmation;
+}
+- (BOOL) expectsReadConfirmation {
+  return resultLocation.expectsReadConfirmation;
+}
+- (ZMLocationBuilder*) setExpectsReadConfirmation:(BOOL) value {
+  resultLocation.hasExpectsReadConfirmation = YES;
+  resultLocation.expectsReadConfirmation = value;
+  return self;
+}
+- (ZMLocationBuilder*) clearExpectsReadConfirmation {
+  resultLocation.hasExpectsReadConfirmation = NO;
+  resultLocation.expectsReadConfirmation = NO;
+  return self;
+}
+- (BOOL) hasLegalHoldStatus {
+  return resultLocation.hasLegalHoldStatus;
+}
+- (ZMLegalHoldStatus) legalHoldStatus {
+  return resultLocation.legalHoldStatus;
+}
+- (ZMLocationBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value {
+  resultLocation.hasLegalHoldStatus = YES;
+  resultLocation.legalHoldStatus = value;
+  return self;
+}
+- (ZMLocationBuilder*) clearLegalHoldStatus {
+  resultLocation.hasLegalHoldStatus = NO;
+  resultLocation.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   return self;
 }
 @end
@@ -7970,6 +8314,8 @@ static ZMImageAsset* defaultZMImageAssetInstance = nil;
 @property ZMAssetNotUploaded notUploaded;
 @property (strong) ZMAssetRemoteData* uploaded;
 @property (strong) ZMAssetPreview* preview;
+@property BOOL expectsReadConfirmation;
+@property ZMLegalHoldStatus legalHoldStatus;
 @end
 
 @implementation ZMAsset
@@ -8002,12 +8348,33 @@ static ZMImageAsset* defaultZMImageAssetInstance = nil;
   hasPreview_ = !!_value_;
 }
 @synthesize preview;
+- (BOOL) hasExpectsReadConfirmation {
+  return !!hasExpectsReadConfirmation_;
+}
+- (void) setHasExpectsReadConfirmation:(BOOL) _value_ {
+  hasExpectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) expectsReadConfirmation {
+  return !!expectsReadConfirmation_;
+}
+- (void) setExpectsReadConfirmation:(BOOL) _value_ {
+  expectsReadConfirmation_ = !!_value_;
+}
+- (BOOL) hasLegalHoldStatus {
+  return !!hasLegalHoldStatus_;
+}
+- (void) setHasLegalHoldStatus:(BOOL) _value_ {
+  hasLegalHoldStatus_ = !!_value_;
+}
+@synthesize legalHoldStatus;
 - (instancetype) init {
   if ((self = [super init])) {
     self.original = [ZMAssetOriginal defaultInstance];
     self.notUploaded = ZMAssetNotUploadedCANCELLED;
     self.uploaded = [ZMAssetRemoteData defaultInstance];
     self.preview = [ZMAssetPreview defaultInstance];
+    self.expectsReadConfirmation = NO;
+    self.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   }
   return self;
 }
@@ -8054,6 +8421,12 @@ static ZMAsset* defaultZMAssetInstance = nil;
   if (self.hasPreview) {
     [output writeMessage:5 value:self.preview];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output writeBool:6 value:self.expectsReadConfirmation];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output writeEnum:7 value:self.legalHoldStatus];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -8074,6 +8447,12 @@ static ZMAsset* defaultZMAssetInstance = nil;
   }
   if (self.hasPreview) {
     size_ += computeMessageSize(5, self.preview);
+  }
+  if (self.hasExpectsReadConfirmation) {
+    size_ += computeBoolSize(6, self.expectsReadConfirmation);
+  }
+  if (self.hasLegalHoldStatus) {
+    size_ += computeEnumSize(7, self.legalHoldStatus);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -8131,6 +8510,12 @@ static ZMAsset* defaultZMAssetInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"expectsReadConfirmation", [NSNumber numberWithBool:self.expectsReadConfirmation]];
+  }
+  if (self.hasLegalHoldStatus) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"legalHoldStatus", NSStringFromZMLegalHoldStatus(self.legalHoldStatus)];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -8152,6 +8537,12 @@ static ZMAsset* defaultZMAssetInstance = nil;
    [self.preview storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"preview"];
   }
+  if (self.hasExpectsReadConfirmation) {
+    [dictionary setObject: [NSNumber numberWithBool:self.expectsReadConfirmation] forKey: @"expectsReadConfirmation"];
+  }
+  if (self.hasLegalHoldStatus) {
+    [dictionary setObject: @(self.legalHoldStatus) forKey: @"legalHoldStatus"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -8171,6 +8562,10 @@ static ZMAsset* defaultZMAssetInstance = nil;
       (!self.hasUploaded || [self.uploaded isEqual:otherMessage.uploaded]) &&
       self.hasPreview == otherMessage.hasPreview &&
       (!self.hasPreview || [self.preview isEqual:otherMessage.preview]) &&
+      self.hasExpectsReadConfirmation == otherMessage.hasExpectsReadConfirmation &&
+      (!self.hasExpectsReadConfirmation || self.expectsReadConfirmation == otherMessage.expectsReadConfirmation) &&
+      self.hasLegalHoldStatus == otherMessage.hasLegalHoldStatus &&
+      (!self.hasLegalHoldStatus || self.legalHoldStatus == otherMessage.legalHoldStatus) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -8186,6 +8581,12 @@ static ZMAsset* defaultZMAssetInstance = nil;
   }
   if (self.hasPreview) {
     hashCode = hashCode * 31 + [self.preview hash];
+  }
+  if (self.hasExpectsReadConfirmation) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.expectsReadConfirmation] hash];
+  }
+  if (self.hasLegalHoldStatus) {
+    hashCode = hashCode * 31 + self.legalHoldStatus;
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -10671,6 +11072,12 @@ static ZMAssetRemoteData* defaultZMAssetRemoteDataInstance = nil;
   if (other.hasPreview) {
     [self mergePreview:other.preview];
   }
+  if (other.hasExpectsReadConfirmation) {
+    [self setExpectsReadConfirmation:other.expectsReadConfirmation];
+  }
+  if (other.hasLegalHoldStatus) {
+    [self setLegalHoldStatus:other.legalHoldStatus];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -10726,6 +11133,19 @@ static ZMAssetRemoteData* defaultZMAssetRemoteDataInstance = nil;
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setPreview:[subBuilder buildPartial]];
+        break;
+      }
+      case 48: {
+        [self setExpectsReadConfirmation:[input readBool]];
+        break;
+      }
+      case 56: {
+        ZMLegalHoldStatus value = (ZMLegalHoldStatus)[input readEnum];
+        if (ZMLegalHoldStatusIsValidValue(value)) {
+          [self setLegalHoldStatus:value];
+        } else {
+          [unknownFields mergeVarintField:7 value:value];
+        }
         break;
       }
     }
@@ -10835,6 +11255,38 @@ static ZMAssetRemoteData* defaultZMAssetRemoteDataInstance = nil;
 - (ZMAssetBuilder*) clearPreview {
   resultAsset.hasPreview = NO;
   resultAsset.preview = [ZMAssetPreview defaultInstance];
+  return self;
+}
+- (BOOL) hasExpectsReadConfirmation {
+  return resultAsset.hasExpectsReadConfirmation;
+}
+- (BOOL) expectsReadConfirmation {
+  return resultAsset.expectsReadConfirmation;
+}
+- (ZMAssetBuilder*) setExpectsReadConfirmation:(BOOL) value {
+  resultAsset.hasExpectsReadConfirmation = YES;
+  resultAsset.expectsReadConfirmation = value;
+  return self;
+}
+- (ZMAssetBuilder*) clearExpectsReadConfirmation {
+  resultAsset.hasExpectsReadConfirmation = NO;
+  resultAsset.expectsReadConfirmation = NO;
+  return self;
+}
+- (BOOL) hasLegalHoldStatus {
+  return resultAsset.hasLegalHoldStatus;
+}
+- (ZMLegalHoldStatus) legalHoldStatus {
+  return resultAsset.legalHoldStatus;
+}
+- (ZMAssetBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value {
+  resultAsset.hasLegalHoldStatus = YES;
+  resultAsset.legalHoldStatus = value;
+  return self;
+}
+- (ZMAssetBuilder*) clearLegalHoldStatus {
+  resultAsset.hasLegalHoldStatus = NO;
+  resultAsset.legalHoldStatus = ZMLegalHoldStatusDISABLED;
   return self;
 }
 @end
