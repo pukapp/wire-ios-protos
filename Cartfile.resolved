@@ -1,4 +1,4 @@
 github "pukapp/generic-message-proto" "cedfef774c6339b201f2dcda1dd4df2c8897b040"
-github "wireapp/backend-api-protobuf" "2.2"
+github "pukapp/backend-api-protobuf" "6f9c24b74a0f259411f8837465398c911fe5d4e4"
 github "wireapp/protobuf-objc" "1.9.14"
 github "wireapp/swift-protobuf" "1.5.0"
