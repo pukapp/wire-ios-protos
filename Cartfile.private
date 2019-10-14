@@ -1,2 +1,3 @@
-github "pukapp/backend-api-protobuf" "6f9c24b74a0f259411f8837465398c911fe5d4e4"
-github "pukapp/generic-message-proto" "secret"
+github "pukapp/backend-api-protobuf" "mergewire"
+github "pukapp/generic-message-proto" "mergewire"
+

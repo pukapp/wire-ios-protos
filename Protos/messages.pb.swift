@@ -104,25 +104,28 @@ extension EncryptionAlgorithm: CaseIterable {
 
 public enum LegalHoldStatus: SwiftProtobuf.Enum {
   public typealias RawValue = Int
-  case disabled // = 0
-  case enabled // = 1
+  case unknown // = 0
+  case disabled // = 1
+  case enabled // = 2
 
   public init() {
-    self = .disabled
+    self = .unknown
   }
 
   public init?(rawValue: Int) {
     switch rawValue {
-    case 0: self = .disabled
-    case 1: self = .enabled
+    case 0: self = .unknown
+    case 1: self = .disabled
+    case 2: self = .enabled
     default: return nil
     }
   }
 
   public var rawValue: Int {
     switch self {
-    case .disabled: return 0
-    case .enabled: return 1
+    case .unknown: return 0
+    case .disabled: return 1
+    case .enabled: return 2
     }
   }
 
@@ -543,7 +546,7 @@ public struct Text {
 
   /// whether this message was sent to legal hold
   public var legalHoldStatus: LegalHoldStatus {
-    get {return _storage._legalHoldStatus ?? .disabled}
+    get {return _storage._legalHoldStatus ?? .unknown}
     set {_uniqueStorage()._legalHoldStatus = newValue}
   }
   /// Returns true if `legalHoldStatus` has been explicitly set.
@@ -584,7 +587,7 @@ public struct Knock {
 
   /// whether this message was sent to legal hold
   public var legalHoldStatus: LegalHoldStatus {
-    get {return _legalHoldStatus ?? .disabled}
+    get {return _legalHoldStatus ?? .unknown}
     set {_legalHoldStatus = newValue}
   }
   /// Returns true if `legalHoldStatus` has been explicitly set.
@@ -1169,7 +1172,7 @@ public struct Location {
 
   /// whether this message was sent to legal hold
   public var legalHoldStatus: LegalHoldStatus {
-    get {return _legalHoldStatus ?? .disabled}
+    get {return _legalHoldStatus ?? .unknown}
     set {_legalHoldStatus = newValue}
   }
   /// Returns true if `legalHoldStatus` has been explicitly set.
@@ -1371,7 +1374,7 @@ public struct Asset {
 
   /// whether this message was sent to legal hold
   public var legalHoldStatus: LegalHoldStatus {
-    get {return _storage._legalHoldStatus ?? .disabled}
+    get {return _storage._legalHoldStatus ?? .unknown}
     set {_uniqueStorage()._legalHoldStatus = newValue}
   }
   /// Returns true if `legalHoldStatus` has been explicitly set.
@@ -1849,12 +1852,23 @@ public struct Reaction {
   /// Clears the value of `messageID`. Subsequent reads from it will return its default value.
   public mutating func clearMessageID() {self._messageID = nil}
 
+  /// whether this message was sent to legal hold
+  public var legalHoldStatus: LegalHoldStatus {
+    get {return _legalHoldStatus ?? .unknown}
+    set {_legalHoldStatus = newValue}
+  }
+  /// Returns true if `legalHoldStatus` has been explicitly set.
+  public var hasLegalHoldStatus: Bool {return self._legalHoldStatus != nil}
+  /// Clears the value of `legalHoldStatus`. Subsequent reads from it will return its default value.
+  public mutating func clearLegalHoldStatus() {self._legalHoldStatus = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _emoji: String? = nil
   fileprivate var _messageID: String? = nil
+  fileprivate var _legalHoldStatus: LegalHoldStatus? = nil
 }
 
 public struct Calling {
@@ -1895,8 +1909,9 @@ extension EncryptionAlgorithm: SwiftProtobuf._ProtoNameProviding {
 
 extension LegalHoldStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "DISABLED"),
-    1: .same(proto: "ENABLED"),
+    0: .same(proto: "UNKNOWN"),
+    1: .same(proto: "DISABLED"),
+    2: .same(proto: "ENABLED"),
   ]
 }
 
@@ -3936,6 +3951,7 @@ extension Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "emoji"),
     2: .standard(proto: "message_id"),
+    3: .standard(proto: "legal_hold_status"),
   ]
 
   public var isInitialized: Bool {
@@ -3948,6 +3964,7 @@ extension Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self._emoji)
       case 2: try decoder.decodeSingularStringField(value: &self._messageID)
+      case 3: try decoder.decodeSingularEnumField(value: &self._legalHoldStatus)
       default: break
       }
     }
@@ -3960,12 +3977,16 @@ extension Reaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationB
     if let v = self._messageID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
+    if let v = self._legalHoldStatus {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Reaction, rhs: Reaction) -> Bool {
     if lhs._emoji != rhs._emoji {return false}
     if lhs._messageID != rhs._messageID {return false}
+    if lhs._legalHoldStatus != rhs._legalHoldStatus {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
