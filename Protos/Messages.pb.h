@@ -76,6 +76,8 @@
 @class ZMEphemeralBuilder;
 @class ZMExternal;
 @class ZMExternalBuilder;
+@class ZMForbid;
+@class ZMForbidBuilder;
 @class ZMGenericMessage;
 @class ZMGenericMessageBuilder;
 @class ZMImageAsset;
@@ -182,21 +184,23 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 #define GenericMessage_confirmation @"confirmation"
 #define GenericMessage_reaction @"reaction"
 #define GenericMessage_ephemeral @"ephemeral"
-#define GenericMessage_textJson @"textJson"
 #define GenericMessage_availability @"availability"
+#define GenericMessage_textJson @"textJson"
+#define GenericMessage_forbid @"forbid"
 @interface ZMGenericMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasMessageId_:1;
-  BOOL hasAsset_:1;
-  BOOL hasAvailability_:1;
+  BOOL hasHidden_:1;
+  BOOL hasForbid_:1;
   BOOL hasTextJson_:1;
+  BOOL hasAvailability_:1;
   BOOL hasEphemeral_:1;
   BOOL hasReaction_:1;
   BOOL hasConfirmation_:1;
   BOOL hasEdited_:1;
   BOOL hasDeleted_:1;
   BOOL hasLocation_:1;
-  BOOL hasHidden_:1;
+  BOOL hasAsset_:1;
   BOOL hasCalling_:1;
   BOOL hasExternal_:1;
   BOOL hasCleared_:1;
@@ -206,16 +210,17 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
   BOOL hasText_:1;
   BOOL hasClientAction_:1;
   NSString* messageId;
-  ZMAsset* asset;
-  ZMAvailability* availability;
+  ZMMessageHide* hidden;
+  ZMForbid* forbid;
   ZMTextJson* textJson;
+  ZMAvailability* availability;
   ZMEphemeral* ephemeral;
   ZMReaction* reaction;
   ZMConfirmation* confirmation;
   ZMMessageEdit* edited;
   ZMMessageDelete* deleted;
   ZMLocation* location;
-  ZMMessageHide* hidden;
+  ZMAsset* asset;
   ZMCalling* calling;
   ZMExternal* external;
   ZMCleared* cleared;
@@ -242,8 +247,9 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (BOOL) hasConfirmation;
 - (BOOL) hasReaction;
 - (BOOL) hasEphemeral;
-- (BOOL) hasTextJson;
 - (BOOL) hasAvailability;
+- (BOOL) hasTextJson;
+- (BOOL) hasForbid;
 @property (readonly, strong) NSString* messageId;
 @property (readonly, strong) ZMText* text;
 @property (readonly, strong) ZMImageAsset* image;
@@ -261,8 +267,9 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 @property (readonly, strong) ZMConfirmation* confirmation;
 @property (readonly, strong) ZMReaction* reaction;
 @property (readonly, strong) ZMEphemeral* ephemeral;
-@property (readonly, strong) ZMTextJson* textJson;
 @property (readonly, strong) ZMAvailability* availability;
+@property (readonly, strong) ZMTextJson* textJson;
+@property (readonly, strong) ZMForbid* forbid;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -414,6 +421,13 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMGenericMessageBuilder*) mergeEphemeral:(ZMEphemeral*) value;
 - (ZMGenericMessageBuilder*) clearEphemeral;
 
+- (BOOL) hasAvailability;
+- (ZMAvailability*) availability;
+- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value;
+- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue;
+- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value;
+- (ZMGenericMessageBuilder*) clearAvailability;
+
 - (BOOL) hasTextJson;
 - (ZMTextJson*) textJson;
 - (ZMGenericMessageBuilder*) setTextJson:(ZMTextJson*) value;
@@ -421,12 +435,12 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMGenericMessageBuilder*) mergeTextJson:(ZMTextJson*) value;
 - (ZMGenericMessageBuilder*) clearTextJson;
 
-- (BOOL) hasAvailability;
-- (ZMAvailability*) availability;
-- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value;
-- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue;
-- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value;
-- (ZMGenericMessageBuilder*) clearAvailability;
+- (BOOL) hasForbid;
+- (ZMForbid*) forbid;
+- (ZMGenericMessageBuilder*) setForbid:(ZMForbid*) value;
+- (ZMGenericMessageBuilder*) setForbidBuilder:(ZMForbidBuilder*) builderForValue;
+- (ZMGenericMessageBuilder*) mergeForbid:(ZMForbid*) value;
+- (ZMGenericMessageBuilder*) clearForbid;
 @end
 
 #define TextJson_content @"content"
@@ -2589,6 +2603,76 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMLegalHoldStatus) legalHoldStatus;
 - (ZMReactionBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value;
 - (ZMReactionBuilder*) clearLegalHoldStatus;
+@end
+
+#define Forbid_emoji @"emoji"
+#define Forbid_message_id @"messageId"
+#define Forbid_opt_name @"optName"
+@interface ZMForbid : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasEmoji_:1;
+  BOOL hasMessageId_:1;
+  BOOL hasOptName_:1;
+  NSString* emoji;
+  NSString* messageId;
+  NSString* optName;
+}
+- (BOOL) hasEmoji;
+- (BOOL) hasMessageId;
+- (BOOL) hasOptName;
+@property (readonly, strong) NSString* emoji;
+@property (readonly, strong) NSString* messageId;
+@property (readonly, strong) NSString* optName;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (ZMForbidBuilder*) builder;
++ (ZMForbidBuilder*) builder;
++ (ZMForbidBuilder*) builderWithPrototype:(ZMForbid*) prototype;
+- (ZMForbidBuilder*) toBuilder;
+
++ (ZMForbid*) parseFromData:(NSData*) data;
++ (ZMForbid*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (ZMForbid*) parseFromInputStream:(NSInputStream*) input;
++ (ZMForbid*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (ZMForbid*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (ZMForbid*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface ZMForbidBuilder : PBGeneratedMessageBuilder {
+@private
+  ZMForbid* resultForbid;
+}
+
+- (ZMForbid*) defaultInstance;
+
+- (ZMForbidBuilder*) clear;
+- (ZMForbidBuilder*) clone;
+
+- (ZMForbid*) build;
+- (ZMForbid*) buildPartial;
+
+- (ZMForbidBuilder*) mergeFrom:(ZMForbid*) other;
+- (ZMForbidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (ZMForbidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasEmoji;
+- (NSString*) emoji;
+- (ZMForbidBuilder*) setEmoji:(NSString*) value;
+- (ZMForbidBuilder*) clearEmoji;
+
+- (BOOL) hasMessageId;
+- (NSString*) messageId;
+- (ZMForbidBuilder*) setMessageId:(NSString*) value;
+- (ZMForbidBuilder*) clearMessageId;
+
+- (BOOL) hasOptName;
+- (NSString*) optName;
+- (ZMForbidBuilder*) setOptName:(NSString*) value;
+- (ZMForbidBuilder*) clearOptName;
 @end
 
 #define Calling_content @"content"

@@ -99,8 +99,9 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
 @property (strong) ZMConfirmation* confirmation;
 @property (strong) ZMReaction* reaction;
 @property (strong) ZMEphemeral* ephemeral;
-@property (strong) ZMTextJson* textJson;
 @property (strong) ZMAvailability* availability;
+@property (strong) ZMTextJson* textJson;
+@property (strong) ZMForbid* forbid;
 @end
 
 @implementation ZMGenericMessage
@@ -224,13 +225,6 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
   hasEphemeral_ = !!_value_;
 }
 @synthesize ephemeral;
-- (BOOL) hasTextJson {
-  return !!hasTextJson_;
-}
-- (void) setHasTextJson:(BOOL) _value_ {
-  hasTextJson_ = !!_value_;
-}
-@synthesize textJson;
 - (BOOL) hasAvailability {
   return !!hasAvailability_;
 }
@@ -238,6 +232,20 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
   hasAvailability_ = !!_value_;
 }
 @synthesize availability;
+- (BOOL) hasTextJson {
+  return !!hasTextJson_;
+}
+- (void) setHasTextJson:(BOOL) _value_ {
+  hasTextJson_ = !!_value_;
+}
+@synthesize textJson;
+- (BOOL) hasForbid {
+  return !!hasForbid_;
+}
+- (void) setHasForbid:(BOOL) _value_ {
+  hasForbid_ = !!_value_;
+}
+@synthesize forbid;
 - (instancetype) init {
   if ((self = [super init])) {
     self.messageId = @"";
@@ -257,8 +265,9 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
     self.confirmation = [ZMConfirmation defaultInstance];
     self.reaction = [ZMReaction defaultInstance];
     self.ephemeral = [ZMEphemeral defaultInstance];
-    self.textJson = [ZMTextJson defaultInstance];
     self.availability = [ZMAvailability defaultInstance];
+    self.textJson = [ZMTextJson defaultInstance];
+    self.forbid = [ZMForbid defaultInstance];
   }
   return self;
 }
@@ -353,13 +362,18 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       return NO;
     }
   }
+  if (self.hasAvailability) {
+    if (!self.availability.isInitialized) {
+      return NO;
+    }
+  }
   if (self.hasTextJson) {
     if (!self.textJson.isInitialized) {
       return NO;
     }
   }
-  if (self.hasAvailability) {
-    if (!self.availability.isInitialized) {
+  if (self.hasForbid) {
+    if (!self.forbid.isInitialized) {
       return NO;
     }
   }
@@ -422,6 +436,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasAvailability) {
     [output writeMessage:100 value:self.availability];
+  }
+  if (self.hasForbid) {
+    [output writeMessage:101 value:self.forbid];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -488,6 +505,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasAvailability) {
     size_ += computeMessageSize(100, self.availability);
+  }
+  if (self.hasForbid) {
+    size_ += computeMessageSize(101, self.forbid);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -632,6 +652,12 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasForbid) {
+    [output appendFormat:@"%@%@ {\n", indent, @"forbid"];
+    [self.forbid writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -726,6 +752,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
    [self.availability storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"availability"];
   }
+  if (self.hasForbid) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.forbid storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"forbid"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -775,6 +806,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       (!self.hasTextJson || [self.textJson isEqual:otherMessage.textJson]) &&
       self.hasAvailability == otherMessage.hasAvailability &&
       (!self.hasAvailability || [self.availability isEqual:otherMessage.availability]) &&
+      self.hasForbid == otherMessage.hasForbid &&
+      (!self.hasForbid || [self.forbid isEqual:otherMessage.forbid]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -835,6 +868,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasAvailability) {
     hashCode = hashCode * 31 + [self.availability hash];
+  }
+  if (self.hasForbid) {
+    hashCode = hashCode * 31 + [self.forbid hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -930,11 +966,14 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (other.hasEphemeral) {
     [self mergeEphemeral:other.ephemeral];
   }
+  if (other.hasAvailability) {
+    [self mergeAvailability:other.availability];
+  }
   if (other.hasTextJson) {
     [self mergeTextJson:other.textJson];
   }
-  if (other.hasAvailability) {
-    [self mergeAvailability:other.availability];
+  if (other.hasForbid) {
+    [self mergeForbid:other.forbid];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1121,6 +1160,15 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setAvailability:[subBuilder buildPartial]];
+        break;
+      }
+      case 810: {
+        ZMForbidBuilder* subBuilder = [ZMForbid builder];
+        if (self.hasForbid) {
+          [subBuilder mergeFrom:self.forbid];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setForbid:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1608,6 +1656,36 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   resultGenericMessage.ephemeral = [ZMEphemeral defaultInstance];
   return self;
 }
+- (BOOL) hasAvailability {
+  return resultGenericMessage.hasAvailability;
+}
+- (ZMAvailability*) availability {
+  return resultGenericMessage.availability;
+}
+- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value {
+  resultGenericMessage.hasAvailability = YES;
+  resultGenericMessage.availability = value;
+  return self;
+}
+- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue {
+  return [self setAvailability:[builderForValue build]];
+}
+- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value {
+  if (resultGenericMessage.hasAvailability &&
+      resultGenericMessage.availability != [ZMAvailability defaultInstance]) {
+    resultGenericMessage.availability =
+      [[[ZMAvailability builderWithPrototype:resultGenericMessage.availability] mergeFrom:value] buildPartial];
+  } else {
+    resultGenericMessage.availability = value;
+  }
+  resultGenericMessage.hasAvailability = YES;
+  return self;
+}
+- (ZMGenericMessageBuilder*) clearAvailability {
+  resultGenericMessage.hasAvailability = NO;
+  resultGenericMessage.availability = [ZMAvailability defaultInstance];
+  return self;
+}
 - (BOOL) hasTextJson {
   return resultGenericMessage.hasTextJson;
 }
@@ -1638,34 +1716,34 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   resultGenericMessage.textJson = [ZMTextJson defaultInstance];
   return self;
 }
-- (BOOL) hasAvailability {
-  return resultGenericMessage.hasAvailability;
+- (BOOL) hasForbid {
+  return resultGenericMessage.hasForbid;
 }
-- (ZMAvailability*) availability {
-  return resultGenericMessage.availability;
+- (ZMForbid*) forbid {
+  return resultGenericMessage.forbid;
 }
-- (ZMGenericMessageBuilder*) setAvailability:(ZMAvailability*) value {
-  resultGenericMessage.hasAvailability = YES;
-  resultGenericMessage.availability = value;
+- (ZMGenericMessageBuilder*) setForbid:(ZMForbid*) value {
+  resultGenericMessage.hasForbid = YES;
+  resultGenericMessage.forbid = value;
   return self;
 }
-- (ZMGenericMessageBuilder*) setAvailabilityBuilder:(ZMAvailabilityBuilder*) builderForValue {
-  return [self setAvailability:[builderForValue build]];
+- (ZMGenericMessageBuilder*) setForbidBuilder:(ZMForbidBuilder*) builderForValue {
+  return [self setForbid:[builderForValue build]];
 }
-- (ZMGenericMessageBuilder*) mergeAvailability:(ZMAvailability*) value {
-  if (resultGenericMessage.hasAvailability &&
-      resultGenericMessage.availability != [ZMAvailability defaultInstance]) {
-    resultGenericMessage.availability =
-      [[[ZMAvailability builderWithPrototype:resultGenericMessage.availability] mergeFrom:value] buildPartial];
+- (ZMGenericMessageBuilder*) mergeForbid:(ZMForbid*) value {
+  if (resultGenericMessage.hasForbid &&
+      resultGenericMessage.forbid != [ZMForbid defaultInstance]) {
+    resultGenericMessage.forbid =
+      [[[ZMForbid builderWithPrototype:resultGenericMessage.forbid] mergeFrom:value] buildPartial];
   } else {
-    resultGenericMessage.availability = value;
+    resultGenericMessage.forbid = value;
   }
-  resultGenericMessage.hasAvailability = YES;
+  resultGenericMessage.hasForbid = YES;
   return self;
 }
-- (ZMGenericMessageBuilder*) clearAvailability {
-  resultGenericMessage.hasAvailability = NO;
-  resultGenericMessage.availability = [ZMAvailability defaultInstance];
+- (ZMGenericMessageBuilder*) clearForbid {
+  resultGenericMessage.hasForbid = NO;
+  resultGenericMessage.forbid = [ZMForbid defaultInstance];
   return self;
 }
 @end
@@ -11914,6 +11992,313 @@ static ZMReaction* defaultZMReactionInstance = nil;
 - (ZMReactionBuilder*) clearLegalHoldStatus {
   resultReaction.hasLegalHoldStatus = NO;
   resultReaction.legalHoldStatus = ZMLegalHoldStatusUNKNOWN;
+  return self;
+}
+@end
+
+@interface ZMForbid ()
+@property (strong) NSString* emoji;
+@property (strong) NSString* messageId;
+@property (strong) NSString* optName;
+@end
+
+@implementation ZMForbid
+
+- (BOOL) hasEmoji {
+  return !!hasEmoji_;
+}
+- (void) setHasEmoji:(BOOL) _value_ {
+  hasEmoji_ = !!_value_;
+}
+@synthesize emoji;
+- (BOOL) hasMessageId {
+  return !!hasMessageId_;
+}
+- (void) setHasMessageId:(BOOL) _value_ {
+  hasMessageId_ = !!_value_;
+}
+@synthesize messageId;
+- (BOOL) hasOptName {
+  return !!hasOptName_;
+}
+- (void) setHasOptName:(BOOL) _value_ {
+  hasOptName_ = !!_value_;
+}
+@synthesize optName;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.emoji = @"";
+    self.messageId = @"";
+    self.optName = @"";
+  }
+  return self;
+}
+static ZMForbid* defaultZMForbidInstance = nil;
++ (void) initialize {
+  if (self == [ZMForbid class]) {
+    defaultZMForbidInstance = [[ZMForbid alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultZMForbidInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultZMForbidInstance;
+}
+- (BOOL) isInitialized {
+  if (!self.hasMessageId) {
+    return NO;
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasEmoji) {
+    [output writeString:1 value:self.emoji];
+  }
+  if (self.hasMessageId) {
+    [output writeString:2 value:self.messageId];
+  }
+  if (self.hasOptName) {
+    [output writeString:3 value:self.optName];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasEmoji) {
+    size_ += computeStringSize(1, self.emoji);
+  }
+  if (self.hasMessageId) {
+    size_ += computeStringSize(2, self.messageId);
+  }
+  if (self.hasOptName) {
+    size_ += computeStringSize(3, self.optName);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (ZMForbid*) parseFromData:(NSData*) data {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromData:data] build];
+}
++ (ZMForbid*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (ZMForbid*) parseFromInputStream:(NSInputStream*) input {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromInputStream:input] build];
+}
++ (ZMForbid*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (ZMForbid*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromCodedInputStream:input] build];
+}
++ (ZMForbid*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMForbid*)[[[ZMForbid builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (ZMForbidBuilder*) builder {
+  return [[ZMForbidBuilder alloc] init];
+}
++ (ZMForbidBuilder*) builderWithPrototype:(ZMForbid*) prototype {
+  return [[ZMForbid builder] mergeFrom:prototype];
+}
+- (ZMForbidBuilder*) builder {
+  return [ZMForbid builder];
+}
+- (ZMForbidBuilder*) toBuilder {
+  return [ZMForbid builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasEmoji) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"emoji", self.emoji];
+  }
+  if (self.hasMessageId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"messageId", self.messageId];
+  }
+  if (self.hasOptName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"optName", self.optName];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasEmoji) {
+    [dictionary setObject: self.emoji forKey: @"emoji"];
+  }
+  if (self.hasMessageId) {
+    [dictionary setObject: self.messageId forKey: @"messageId"];
+  }
+  if (self.hasOptName) {
+    [dictionary setObject: self.optName forKey: @"optName"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[ZMForbid class]]) {
+    return NO;
+  }
+  ZMForbid *otherMessage = other;
+  return
+      self.hasEmoji == otherMessage.hasEmoji &&
+      (!self.hasEmoji || [self.emoji isEqual:otherMessage.emoji]) &&
+      self.hasMessageId == otherMessage.hasMessageId &&
+      (!self.hasMessageId || [self.messageId isEqual:otherMessage.messageId]) &&
+      self.hasOptName == otherMessage.hasOptName &&
+      (!self.hasOptName || [self.optName isEqual:otherMessage.optName]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasEmoji) {
+    hashCode = hashCode * 31 + [self.emoji hash];
+  }
+  if (self.hasMessageId) {
+    hashCode = hashCode * 31 + [self.messageId hash];
+  }
+  if (self.hasOptName) {
+    hashCode = hashCode * 31 + [self.optName hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface ZMForbidBuilder()
+@property (strong) ZMForbid* resultForbid;
+@end
+
+@implementation ZMForbidBuilder
+@synthesize resultForbid;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultForbid = [[ZMForbid alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultForbid;
+}
+- (ZMForbidBuilder*) clear {
+  self.resultForbid = [[ZMForbid alloc] init];
+  return self;
+}
+- (ZMForbidBuilder*) clone {
+  return [ZMForbid builderWithPrototype:resultForbid];
+}
+- (ZMForbid*) defaultInstance {
+  return [ZMForbid defaultInstance];
+}
+- (ZMForbid*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (ZMForbid*) buildPartial {
+  ZMForbid* returnMe = resultForbid;
+  self.resultForbid = nil;
+  return returnMe;
+}
+- (ZMForbidBuilder*) mergeFrom:(ZMForbid*) other {
+  if (other == [ZMForbid defaultInstance]) {
+    return self;
+  }
+  if (other.hasEmoji) {
+    [self setEmoji:other.emoji];
+  }
+  if (other.hasMessageId) {
+    [self setMessageId:other.messageId];
+  }
+  if (other.hasOptName) {
+    [self setOptName:other.optName];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (ZMForbidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (ZMForbidBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setEmoji:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setMessageId:[input readString]];
+        break;
+      }
+      case 26: {
+        [self setOptName:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasEmoji {
+  return resultForbid.hasEmoji;
+}
+- (NSString*) emoji {
+  return resultForbid.emoji;
+}
+- (ZMForbidBuilder*) setEmoji:(NSString*) value {
+  resultForbid.hasEmoji = YES;
+  resultForbid.emoji = value;
+  return self;
+}
+- (ZMForbidBuilder*) clearEmoji {
+  resultForbid.hasEmoji = NO;
+  resultForbid.emoji = @"";
+  return self;
+}
+- (BOOL) hasMessageId {
+  return resultForbid.hasMessageId;
+}
+- (NSString*) messageId {
+  return resultForbid.messageId;
+}
+- (ZMForbidBuilder*) setMessageId:(NSString*) value {
+  resultForbid.hasMessageId = YES;
+  resultForbid.messageId = value;
+  return self;
+}
+- (ZMForbidBuilder*) clearMessageId {
+  resultForbid.hasMessageId = NO;
+  resultForbid.messageId = @"";
+  return self;
+}
+- (BOOL) hasOptName {
+  return resultForbid.hasOptName;
+}
+- (NSString*) optName {
+  return resultForbid.optName;
+}
+- (ZMForbidBuilder*) setOptName:(NSString*) value {
+  resultForbid.hasOptName = YES;
+  resultForbid.optName = value;
+  return self;
+}
+- (ZMForbidBuilder*) clearOptName {
+  resultForbid.hasOptName = NO;
+  resultForbid.optName = @"";
   return self;
 }
 @end
