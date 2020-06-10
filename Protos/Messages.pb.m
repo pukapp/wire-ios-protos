@@ -102,6 +102,7 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
 @property (strong) ZMAvailability* availability;
 @property (strong) ZMTextJson* textJson;
 @property (strong) ZMForbid* forbid;
+@property (strong) ZMMediasoup* mediasoup;
 @end
 
 @implementation ZMGenericMessage
@@ -246,6 +247,13 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
   hasForbid_ = !!_value_;
 }
 @synthesize forbid;
+- (BOOL) hasMediasoup {
+  return !!hasMediasoup_;
+}
+- (void) setHasMediasoup:(BOOL) _value_ {
+  hasMediasoup_ = !!_value_;
+}
+@synthesize mediasoup;
 - (instancetype) init {
   if ((self = [super init])) {
     self.messageId = @"";
@@ -268,6 +276,7 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
     self.availability = [ZMAvailability defaultInstance];
     self.textJson = [ZMTextJson defaultInstance];
     self.forbid = [ZMForbid defaultInstance];
+    self.mediasoup = [ZMMediasoup defaultInstance];
   }
   return self;
 }
@@ -377,6 +386,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       return NO;
     }
   }
+  if (self.hasMediasoup) {
+    if (!self.mediasoup.isInitialized) {
+      return NO;
+    }
+  }
   return YES;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
@@ -439,6 +453,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasForbid) {
     [output writeMessage:101 value:self.forbid];
+  }
+  if (self.hasMediasoup) {
+    [output writeMessage:102 value:self.mediasoup];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -508,6 +525,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasForbid) {
     size_ += computeMessageSize(101, self.forbid);
+  }
+  if (self.hasMediasoup) {
+    size_ += computeMessageSize(102, self.mediasoup);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -658,6 +678,12 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasMediasoup) {
+    [output appendFormat:@"%@%@ {\n", indent, @"mediasoup"];
+    [self.mediasoup writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -757,6 +783,11 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
    [self.forbid storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"forbid"];
   }
+  if (self.hasMediasoup) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.mediasoup storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"mediasoup"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -808,6 +839,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       (!self.hasAvailability || [self.availability isEqual:otherMessage.availability]) &&
       self.hasForbid == otherMessage.hasForbid &&
       (!self.hasForbid || [self.forbid isEqual:otherMessage.forbid]) &&
+      self.hasMediasoup == otherMessage.hasMediasoup &&
+      (!self.hasMediasoup || [self.mediasoup isEqual:otherMessage.mediasoup]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -871,6 +904,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (self.hasForbid) {
     hashCode = hashCode * 31 + [self.forbid hash];
+  }
+  if (self.hasMediasoup) {
+    hashCode = hashCode * 31 + [self.mediasoup hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -974,6 +1010,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   }
   if (other.hasForbid) {
     [self mergeForbid:other.forbid];
+  }
+  if (other.hasMediasoup) {
+    [self mergeMediasoup:other.mediasoup];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1169,6 +1208,15 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setForbid:[subBuilder buildPartial]];
+        break;
+      }
+      case 818: {
+        ZMMediasoupBuilder* subBuilder = [ZMMediasoup builder];
+        if (self.hasMediasoup) {
+          [subBuilder mergeFrom:self.mediasoup];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setMediasoup:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1744,6 +1792,36 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
 - (ZMGenericMessageBuilder*) clearForbid {
   resultGenericMessage.hasForbid = NO;
   resultGenericMessage.forbid = [ZMForbid defaultInstance];
+  return self;
+}
+- (BOOL) hasMediasoup {
+  return resultGenericMessage.hasMediasoup;
+}
+- (ZMMediasoup*) mediasoup {
+  return resultGenericMessage.mediasoup;
+}
+- (ZMGenericMessageBuilder*) setMediasoup:(ZMMediasoup*) value {
+  resultGenericMessage.hasMediasoup = YES;
+  resultGenericMessage.mediasoup = value;
+  return self;
+}
+- (ZMGenericMessageBuilder*) setMediasoupBuilder:(ZMMediasoupBuilder*) builderForValue {
+  return [self setMediasoup:[builderForValue build]];
+}
+- (ZMGenericMessageBuilder*) mergeMediasoup:(ZMMediasoup*) value {
+  if (resultGenericMessage.hasMediasoup &&
+      resultGenericMessage.mediasoup != [ZMMediasoup defaultInstance]) {
+    resultGenericMessage.mediasoup =
+      [[[ZMMediasoup builderWithPrototype:resultGenericMessage.mediasoup] mergeFrom:value] buildPartial];
+  } else {
+    resultGenericMessage.mediasoup = value;
+  }
+  resultGenericMessage.hasMediasoup = YES;
+  return self;
+}
+- (ZMGenericMessageBuilder*) clearMediasoup {
+  resultGenericMessage.hasMediasoup = NO;
+  resultGenericMessage.mediasoup = [ZMMediasoup defaultInstance];
   return self;
 }
 @end
@@ -12299,6 +12377,215 @@ static ZMForbid* defaultZMForbidInstance = nil;
 - (ZMForbidBuilder*) clearOptName {
   resultForbid.hasOptName = NO;
   resultForbid.optName = @"";
+  return self;
+}
+@end
+
+@interface ZMMediasoup ()
+@property (strong) NSString* content;
+@end
+
+@implementation ZMMediasoup
+
+- (BOOL) hasContent {
+  return !!hasContent_;
+}
+- (void) setHasContent:(BOOL) _value_ {
+  hasContent_ = !!_value_;
+}
+@synthesize content;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.content = @"";
+  }
+  return self;
+}
+static ZMMediasoup* defaultZMMediasoupInstance = nil;
++ (void) initialize {
+  if (self == [ZMMediasoup class]) {
+    defaultZMMediasoupInstance = [[ZMMediasoup alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultZMMediasoupInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultZMMediasoupInstance;
+}
+- (BOOL) isInitialized {
+  if (!self.hasContent) {
+    return NO;
+  }
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasContent) {
+    [output writeString:1 value:self.content];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasContent) {
+    size_ += computeStringSize(1, self.content);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (ZMMediasoup*) parseFromData:(NSData*) data {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromData:data] build];
+}
++ (ZMMediasoup*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromInputStream:input] build];
+}
++ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromCodedInputStream:input] build];
+}
++ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (ZMMediasoupBuilder*) builder {
+  return [[ZMMediasoupBuilder alloc] init];
+}
++ (ZMMediasoupBuilder*) builderWithPrototype:(ZMMediasoup*) prototype {
+  return [[ZMMediasoup builder] mergeFrom:prototype];
+}
+- (ZMMediasoupBuilder*) builder {
+  return [ZMMediasoup builder];
+}
+- (ZMMediasoupBuilder*) toBuilder {
+  return [ZMMediasoup builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasContent) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"content", self.content];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasContent) {
+    [dictionary setObject: self.content forKey: @"content"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[ZMMediasoup class]]) {
+    return NO;
+  }
+  ZMMediasoup *otherMessage = other;
+  return
+      self.hasContent == otherMessage.hasContent &&
+      (!self.hasContent || [self.content isEqual:otherMessage.content]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasContent) {
+    hashCode = hashCode * 31 + [self.content hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface ZMMediasoupBuilder()
+@property (strong) ZMMediasoup* resultMediasoup;
+@end
+
+@implementation ZMMediasoupBuilder
+@synthesize resultMediasoup;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultMediasoup = [[ZMMediasoup alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultMediasoup;
+}
+- (ZMMediasoupBuilder*) clear {
+  self.resultMediasoup = [[ZMMediasoup alloc] init];
+  return self;
+}
+- (ZMMediasoupBuilder*) clone {
+  return [ZMMediasoup builderWithPrototype:resultMediasoup];
+}
+- (ZMMediasoup*) defaultInstance {
+  return [ZMMediasoup defaultInstance];
+}
+- (ZMMediasoup*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (ZMMediasoup*) buildPartial {
+  ZMMediasoup* returnMe = resultMediasoup;
+  self.resultMediasoup = nil;
+  return returnMe;
+}
+- (ZMMediasoupBuilder*) mergeFrom:(ZMMediasoup*) other {
+  if (other == [ZMMediasoup defaultInstance]) {
+    return self;
+  }
+  if (other.hasContent) {
+    [self setContent:other.content];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setContent:[input readString]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasContent {
+  return resultMediasoup.hasContent;
+}
+- (NSString*) content {
+  return resultMediasoup.content;
+}
+- (ZMMediasoupBuilder*) setContent:(NSString*) value {
+  resultMediasoup.hasContent = YES;
+  resultMediasoup.content = value;
+  return self;
+}
+- (ZMMediasoupBuilder*) clearContent {
+  resultMediasoup.hasContent = NO;
+  resultMediasoup.content = @"";
   return self;
 }
 @end

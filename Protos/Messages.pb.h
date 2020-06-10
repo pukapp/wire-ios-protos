@@ -90,6 +90,8 @@
 @class ZMLinkPreviewBuilder;
 @class ZMLocation;
 @class ZMLocationBuilder;
+@class ZMMediasoup;
+@class ZMMediasoupBuilder;
 @class ZMMention;
 @class ZMMentionBuilder;
 @class ZMMessageDelete;
@@ -187,10 +189,12 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 #define GenericMessage_availability @"availability"
 #define GenericMessage_textJson @"textJson"
 #define GenericMessage_forbid @"forbid"
+#define GenericMessage_mediasoup @"mediasoup"
 @interface ZMGenericMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasMessageId_:1;
   BOOL hasHidden_:1;
+  BOOL hasMediasoup_:1;
   BOOL hasForbid_:1;
   BOOL hasTextJson_:1;
   BOOL hasAvailability_:1;
@@ -211,6 +215,7 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
   BOOL hasClientAction_:1;
   NSString* messageId;
   ZMMessageHide* hidden;
+  ZMMediasoup* mediasoup;
   ZMForbid* forbid;
   ZMTextJson* textJson;
   ZMAvailability* availability;
@@ -250,6 +255,7 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (BOOL) hasAvailability;
 - (BOOL) hasTextJson;
 - (BOOL) hasForbid;
+- (BOOL) hasMediasoup;
 @property (readonly, strong) NSString* messageId;
 @property (readonly, strong) ZMText* text;
 @property (readonly, strong) ZMImageAsset* image;
@@ -270,6 +276,7 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 @property (readonly, strong) ZMAvailability* availability;
 @property (readonly, strong) ZMTextJson* textJson;
 @property (readonly, strong) ZMForbid* forbid;
+@property (readonly, strong) ZMMediasoup* mediasoup;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -441,6 +448,13 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMGenericMessageBuilder*) setForbidBuilder:(ZMForbidBuilder*) builderForValue;
 - (ZMGenericMessageBuilder*) mergeForbid:(ZMForbid*) value;
 - (ZMGenericMessageBuilder*) clearForbid;
+
+- (BOOL) hasMediasoup;
+- (ZMMediasoup*) mediasoup;
+- (ZMGenericMessageBuilder*) setMediasoup:(ZMMediasoup*) value;
+- (ZMGenericMessageBuilder*) setMediasoupBuilder:(ZMMediasoupBuilder*) builderForValue;
+- (ZMGenericMessageBuilder*) mergeMediasoup:(ZMMediasoup*) value;
+- (ZMGenericMessageBuilder*) clearMediasoup;
 @end
 
 #define TextJson_content @"content"
@@ -2673,6 +2687,56 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (NSString*) optName;
 - (ZMForbidBuilder*) setOptName:(NSString*) value;
 - (ZMForbidBuilder*) clearOptName;
+@end
+
+#define Mediasoup_content @"content"
+@interface ZMMediasoup : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasContent_:1;
+  NSString* content;
+}
+- (BOOL) hasContent;
+@property (readonly, strong) NSString* content;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (ZMMediasoupBuilder*) builder;
++ (ZMMediasoupBuilder*) builder;
++ (ZMMediasoupBuilder*) builderWithPrototype:(ZMMediasoup*) prototype;
+- (ZMMediasoupBuilder*) toBuilder;
+
++ (ZMMediasoup*) parseFromData:(NSData*) data;
++ (ZMMediasoup*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input;
++ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface ZMMediasoupBuilder : PBGeneratedMessageBuilder {
+@private
+  ZMMediasoup* resultMediasoup;
+}
+
+- (ZMMediasoup*) defaultInstance;
+
+- (ZMMediasoupBuilder*) clear;
+- (ZMMediasoupBuilder*) clone;
+
+- (ZMMediasoup*) build;
+- (ZMMediasoup*) buildPartial;
+
+- (ZMMediasoupBuilder*) mergeFrom:(ZMMediasoup*) other;
+- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasContent;
+- (NSString*) content;
+- (ZMMediasoupBuilder*) setContent:(NSString*) value;
+- (ZMMediasoupBuilder*) clearContent;
 @end
 
 #define Calling_content @"content"
