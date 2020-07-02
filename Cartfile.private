@@ -1,1 +1,2 @@
-
+github "pukapp/generic-message-proto" "mergewire"
+github "wireapp/backend-api-protobuf" "2.3"
