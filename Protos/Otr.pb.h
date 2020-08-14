@@ -298,14 +298,23 @@
 #define NewOtrMessage_native_push @"nativePush"
 #define NewOtrMessage_blob @"blob"
 #define NewOtrMessage_unblock @"unblock"
+#define NewOtrMessage_video @"video"
+#define NewOtrMessage_call_user_name @"callUserName"
+#define NewOtrMessage_conversation_id @"conversationId"
 @interface ZMNewOtrMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasNativePush_:1;
   BOOL hasUnblock_:1;
+  BOOL hasVideo_:1;
+  BOOL hasCallUserName_:1;
+  BOOL hasConversationId_:1;
   BOOL hasSender_:1;
   BOOL hasBlob_:1;
   BOOL nativePush_:1;
   BOOL unblock_:1;
+  BOOL video_:1;
+  NSString* callUserName;
+  NSString* conversationId;
   ZMClientId* sender;
   NSData* blob;
   NSMutableArray * recipientsArray;
@@ -314,11 +323,17 @@
 - (BOOL) hasNativePush;
 - (BOOL) hasBlob;
 - (BOOL) hasUnblock;
+- (BOOL) hasVideo;
+- (BOOL) hasCallUserName;
+- (BOOL) hasConversationId;
 @property (readonly, strong) ZMClientId* sender;
 @property (readonly, strong) NSArray<ZMUserEntry*> * recipients;
 - (BOOL) nativePush;
 @property (readonly, strong) NSData* blob;
 - (BOOL) unblock;
+- (BOOL) video;
+@property (readonly, strong) NSString* callUserName;
+@property (readonly, strong) NSString* conversationId;
 - (ZMUserEntry*)recipientsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -383,6 +398,21 @@
 - (BOOL) unblock;
 - (ZMNewOtrMessageBuilder*) setUnblock:(BOOL) value;
 - (ZMNewOtrMessageBuilder*) clearUnblock;
+
+- (BOOL) hasVideo;
+- (BOOL) video;
+- (ZMNewOtrMessageBuilder*) setVideo:(BOOL) value;
+- (ZMNewOtrMessageBuilder*) clearVideo;
+
+- (BOOL) hasCallUserName;
+- (NSString*) callUserName;
+- (ZMNewOtrMessageBuilder*) setCallUserName:(NSString*) value;
+- (ZMNewOtrMessageBuilder*) clearCallUserName;
+
+- (BOOL) hasConversationId;
+- (NSString*) conversationId;
+- (ZMNewOtrMessageBuilder*) setConversationId:(NSString*) value;
+- (ZMNewOtrMessageBuilder*) clearConversationId;
 @end
 
 #define OtrAssetMeta_sender @"sender"

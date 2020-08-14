@@ -1041,6 +1041,9 @@ static ZMUserEntry* defaultZMUserEntryInstance = nil;
 @property BOOL nativePush;
 @property (strong) NSData* blob;
 @property BOOL unblock;
+@property BOOL video;
+@property (strong) NSString* callUserName;
+@property (strong) NSString* conversationId;
 @end
 
 @implementation ZMNewOtrMessage
@@ -1085,12 +1088,41 @@ static ZMUserEntry* defaultZMUserEntryInstance = nil;
 - (void) setUnblock:(BOOL) _value_ {
   unblock_ = !!_value_;
 }
+- (BOOL) hasVideo {
+  return !!hasVideo_;
+}
+- (void) setHasVideo:(BOOL) _value_ {
+  hasVideo_ = !!_value_;
+}
+- (BOOL) video {
+  return !!video_;
+}
+- (void) setVideo:(BOOL) _value_ {
+  video_ = !!_value_;
+}
+- (BOOL) hasCallUserName {
+  return !!hasCallUserName_;
+}
+- (void) setHasCallUserName:(BOOL) _value_ {
+  hasCallUserName_ = !!_value_;
+}
+@synthesize callUserName;
+- (BOOL) hasConversationId {
+  return !!hasConversationId_;
+}
+- (void) setHasConversationId:(BOOL) _value_ {
+  hasConversationId_ = !!_value_;
+}
+@synthesize conversationId;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sender = [ZMClientId defaultInstance];
     self.nativePush = YES;
     self.blob = [NSData data];
     self.unblock = NO;
+    self.video = NO;
+    self.callUserName = @"";
+    self.conversationId = @"";
   }
   return self;
 }
@@ -1145,6 +1177,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [output writeBool:100 value:self.unblock];
   }
+  if (self.hasVideo) {
+    [output writeBool:101 value:self.video];
+  }
+  if (self.hasCallUserName) {
+    [output writeString:102 value:self.callUserName];
+  }
+  if (self.hasConversationId) {
+    [output writeString:103 value:self.conversationId];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -1168,6 +1209,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   }
   if (self.hasUnblock) {
     size_ += computeBoolSize(100, self.unblock);
+  }
+  if (self.hasVideo) {
+    size_ += computeBoolSize(101, self.video);
+  }
+  if (self.hasCallUserName) {
+    size_ += computeStringSize(102, self.callUserName);
+  }
+  if (self.hasConversationId) {
+    size_ += computeStringSize(103, self.conversationId);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1225,6 +1275,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [output appendFormat:@"%@%@: %@\n", indent, @"unblock", [NSNumber numberWithBool:self.unblock]];
   }
+  if (self.hasVideo) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"video", [NSNumber numberWithBool:self.video]];
+  }
+  if (self.hasCallUserName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"callUserName", self.callUserName];
+  }
+  if (self.hasConversationId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"conversationId", self.conversationId];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -1247,6 +1306,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [dictionary setObject: [NSNumber numberWithBool:self.unblock] forKey: @"unblock"];
   }
+  if (self.hasVideo) {
+    [dictionary setObject: [NSNumber numberWithBool:self.video] forKey: @"video"];
+  }
+  if (self.hasCallUserName) {
+    [dictionary setObject: self.callUserName forKey: @"callUserName"];
+  }
+  if (self.hasConversationId) {
+    [dictionary setObject: self.conversationId forKey: @"conversationId"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -1267,6 +1335,12 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
       (!self.hasBlob || [self.blob isEqual:otherMessage.blob]) &&
       self.hasUnblock == otherMessage.hasUnblock &&
       (!self.hasUnblock || self.unblock == otherMessage.unblock) &&
+      self.hasVideo == otherMessage.hasVideo &&
+      (!self.hasVideo || self.video == otherMessage.video) &&
+      self.hasCallUserName == otherMessage.hasCallUserName &&
+      (!self.hasCallUserName || [self.callUserName isEqual:otherMessage.callUserName]) &&
+      self.hasConversationId == otherMessage.hasConversationId &&
+      (!self.hasConversationId || [self.conversationId isEqual:otherMessage.conversationId]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1285,6 +1359,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   }
   if (self.hasUnblock) {
     hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.unblock] hash];
+  }
+  if (self.hasVideo) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.video] hash];
+  }
+  if (self.hasCallUserName) {
+    hashCode = hashCode * 31 + [self.callUserName hash];
+  }
+  if (self.hasConversationId) {
+    hashCode = hashCode * 31 + [self.conversationId hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1348,6 +1431,15 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (other.hasUnblock) {
     [self setUnblock:other.unblock];
   }
+  if (other.hasVideo) {
+    [self setVideo:other.video];
+  }
+  if (other.hasCallUserName) {
+    [self setCallUserName:other.callUserName];
+  }
+  if (other.hasConversationId) {
+    [self setConversationId:other.conversationId];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -1394,6 +1486,18 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
       }
       case 800: {
         [self setUnblock:[input readBool]];
+        break;
+      }
+      case 808: {
+        [self setVideo:[input readBool]];
+        break;
+      }
+      case 818: {
+        [self setCallUserName:[input readString]];
+        break;
+      }
+      case 826: {
+        [self setConversationId:[input readString]];
         break;
       }
     }
@@ -1496,6 +1600,54 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
 - (ZMNewOtrMessageBuilder*) clearUnblock {
   resultNewOtrMessage.hasUnblock = NO;
   resultNewOtrMessage.unblock = NO;
+  return self;
+}
+- (BOOL) hasVideo {
+  return resultNewOtrMessage.hasVideo;
+}
+- (BOOL) video {
+  return resultNewOtrMessage.video;
+}
+- (ZMNewOtrMessageBuilder*) setVideo:(BOOL) value {
+  resultNewOtrMessage.hasVideo = YES;
+  resultNewOtrMessage.video = value;
+  return self;
+}
+- (ZMNewOtrMessageBuilder*) clearVideo {
+  resultNewOtrMessage.hasVideo = NO;
+  resultNewOtrMessage.video = NO;
+  return self;
+}
+- (BOOL) hasCallUserName {
+  return resultNewOtrMessage.hasCallUserName;
+}
+- (NSString*) callUserName {
+  return resultNewOtrMessage.callUserName;
+}
+- (ZMNewOtrMessageBuilder*) setCallUserName:(NSString*) value {
+  resultNewOtrMessage.hasCallUserName = YES;
+  resultNewOtrMessage.callUserName = value;
+  return self;
+}
+- (ZMNewOtrMessageBuilder*) clearCallUserName {
+  resultNewOtrMessage.hasCallUserName = NO;
+  resultNewOtrMessage.callUserName = @"";
+  return self;
+}
+- (BOOL) hasConversationId {
+  return resultNewOtrMessage.hasConversationId;
+}
+- (NSString*) conversationId {
+  return resultNewOtrMessage.conversationId;
+}
+- (ZMNewOtrMessageBuilder*) setConversationId:(NSString*) value {
+  resultNewOtrMessage.hasConversationId = YES;
+  resultNewOtrMessage.conversationId = value;
+  return self;
+}
+- (ZMNewOtrMessageBuilder*) clearConversationId {
+  resultNewOtrMessage.hasConversationId = NO;
+  resultNewOtrMessage.conversationId = @"";
   return self;
 }
 @end
