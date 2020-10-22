@@ -673,13 +673,16 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 #define Text_quote @"quote"
 #define Text_expects_read_confirmation @"expectsReadConfirmation"
 #define Text_legal_hold_status @"legalHoldStatus"
+#define Text_markdown @"markdown"
 @interface ZMText : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasExpectsReadConfirmation_:1;
+  BOOL hasMarkdown_:1;
   BOOL hasContent_:1;
   BOOL hasQuote_:1;
   BOOL hasLegalHoldStatus_:1;
   BOOL expectsReadConfirmation_:1;
+  BOOL markdown_:1;
   NSString* content;
   ZMQuote* quote;
   ZMLegalHoldStatus legalHoldStatus;
@@ -690,12 +693,14 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (BOOL) hasQuote;
 - (BOOL) hasExpectsReadConfirmation;
 - (BOOL) hasLegalHoldStatus;
+- (BOOL) hasMarkdown;
 @property (readonly, strong) NSString* content;
 @property (readonly, strong) NSArray<ZMLinkPreview*> * linkPreview;
 @property (readonly, strong) NSArray<ZMMention*> * mentions;
 @property (readonly, strong) ZMQuote* quote;
 - (BOOL) expectsReadConfirmation;
 @property (readonly) ZMLegalHoldStatus legalHoldStatus;
+- (BOOL) markdown;
 - (ZMLinkPreview*)linkPreviewAtIndex:(NSUInteger)index;
 - (ZMMention*)mentionsAtIndex:(NSUInteger)index;
 
@@ -767,6 +772,11 @@ NSString *NSStringFromZMAssetNotUploaded(ZMAssetNotUploaded value);
 - (ZMLegalHoldStatus) legalHoldStatus;
 - (ZMTextBuilder*) setLegalHoldStatus:(ZMLegalHoldStatus) value;
 - (ZMTextBuilder*) clearLegalHoldStatus;
+
+- (BOOL) hasMarkdown;
+- (BOOL) markdown;
+- (ZMTextBuilder*) setMarkdown:(BOOL) value;
+- (ZMTextBuilder*) clearMarkdown;
 @end
 
 #define Knock_hot_knock @"hotKnock"

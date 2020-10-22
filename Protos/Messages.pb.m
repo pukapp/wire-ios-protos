@@ -2881,6 +2881,7 @@ static ZMEphemeral* defaultZMEphemeralInstance = nil;
 @property (strong) ZMQuote* quote;
 @property BOOL expectsReadConfirmation;
 @property ZMLegalHoldStatus legalHoldStatus;
+@property BOOL markdown;
 @end
 
 @implementation ZMText
@@ -2922,12 +2923,25 @@ static ZMEphemeral* defaultZMEphemeralInstance = nil;
   hasLegalHoldStatus_ = !!_value_;
 }
 @synthesize legalHoldStatus;
+- (BOOL) hasMarkdown {
+  return !!hasMarkdown_;
+}
+- (void) setHasMarkdown:(BOOL) _value_ {
+  hasMarkdown_ = !!_value_;
+}
+- (BOOL) markdown {
+  return !!markdown_;
+}
+- (void) setMarkdown:(BOOL) _value_ {
+  markdown_ = !!_value_;
+}
 - (instancetype) init {
   if ((self = [super init])) {
     self.content = @"";
     self.quote = [ZMQuote defaultInstance];
     self.expectsReadConfirmation = NO;
     self.legalHoldStatus = ZMLegalHoldStatusUNKNOWN;
+    self.markdown = NO;
   }
   return self;
 }
@@ -3001,6 +3015,9 @@ static ZMText* defaultZMTextInstance = nil;
   if (self.hasLegalHoldStatus) {
     [output writeEnum:7 value:self.legalHoldStatus];
   }
+  if (self.hasMarkdown) {
+    [output writeBool:100 value:self.markdown];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -3027,6 +3044,9 @@ static ZMText* defaultZMTextInstance = nil;
   }
   if (self.hasLegalHoldStatus) {
     size_ += computeEnumSize(7, self.legalHoldStatus);
+  }
+  if (self.hasMarkdown) {
+    size_ += computeBoolSize(100, self.markdown);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3090,6 +3110,9 @@ static ZMText* defaultZMTextInstance = nil;
   if (self.hasLegalHoldStatus) {
     [output appendFormat:@"%@%@: %@\n", indent, @"legalHoldStatus", NSStringFromZMLegalHoldStatus(self.legalHoldStatus)];
   }
+  if (self.hasMarkdown) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"markdown", [NSNumber numberWithBool:self.markdown]];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -3117,6 +3140,9 @@ static ZMText* defaultZMTextInstance = nil;
   if (self.hasLegalHoldStatus) {
     [dictionary setObject: @(self.legalHoldStatus) forKey: @"legalHoldStatus"];
   }
+  if (self.hasMarkdown) {
+    [dictionary setObject: [NSNumber numberWithBool:self.markdown] forKey: @"markdown"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -3138,6 +3164,8 @@ static ZMText* defaultZMTextInstance = nil;
       (!self.hasExpectsReadConfirmation || self.expectsReadConfirmation == otherMessage.expectsReadConfirmation) &&
       self.hasLegalHoldStatus == otherMessage.hasLegalHoldStatus &&
       (!self.hasLegalHoldStatus || self.legalHoldStatus == otherMessage.legalHoldStatus) &&
+      self.hasMarkdown == otherMessage.hasMarkdown &&
+      (!self.hasMarkdown || self.markdown == otherMessage.markdown) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -3159,6 +3187,9 @@ static ZMText* defaultZMTextInstance = nil;
   }
   if (self.hasLegalHoldStatus) {
     hashCode = hashCode * 31 + self.legalHoldStatus;
+  }
+  if (self.hasMarkdown) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.markdown] hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3229,6 +3260,9 @@ static ZMText* defaultZMTextInstance = nil;
   if (other.hasLegalHoldStatus) {
     [self setLegalHoldStatus:other.legalHoldStatus];
   }
+  if (other.hasMarkdown) {
+    [self setMarkdown:other.markdown];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -3286,6 +3320,10 @@ static ZMText* defaultZMTextInstance = nil;
         } else {
           [unknownFields mergeVarintField:7 value:value];
         }
+        break;
+      }
+      case 800: {
+        [self setMarkdown:[input readBool]];
         break;
       }
     }
@@ -3409,6 +3447,22 @@ static ZMText* defaultZMTextInstance = nil;
 - (ZMTextBuilder*) clearLegalHoldStatus {
   resultText.hasLegalHoldStatus = NO;
   resultText.legalHoldStatus = ZMLegalHoldStatusUNKNOWN;
+  return self;
+}
+- (BOOL) hasMarkdown {
+  return resultText.hasMarkdown;
+}
+- (BOOL) markdown {
+  return resultText.markdown;
+}
+- (ZMTextBuilder*) setMarkdown:(BOOL) value {
+  resultText.hasMarkdown = YES;
+  resultText.markdown = value;
+  return self;
+}
+- (ZMTextBuilder*) clearMarkdown {
+  resultText.hasMarkdown = NO;
+  resultText.markdown = NO;
   return self;
 }
 @end
