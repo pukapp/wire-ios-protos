@@ -10,8 +10,6 @@
 		0908380A1B872DBF00629095 /* WireProtos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 090837FE1B872DBF00629095 /* WireProtos.framework */; };
 		09BCDB6E1BCBE08D0020DCC7 /* medium.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 09BCDB6D1BCBE08D0020DCC7 /* medium.jpg */; };
 		5E13807A21A307CA004A646C /* SwiftProtobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E13807921A307CA004A646C /* SwiftProtobuf.framework */; };
-		5E13807D21A30A9D004A646C /* messages.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E13807B21A30A9D004A646C /* messages.pb.swift */; };
-		5E13807E21A30A9D004A646C /* otr.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E13807C21A30A9D004A646C /* otr.pb.swift */; };
 		5E13808021A30AB7004A646C /* ProtosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E13807F21A30AB7004A646C /* ProtosTests.swift */; };
 		5EAC172E21A30C390014E671 /* WireProtos.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 090837FE1B872DBF00629095 /* WireProtos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5EAC172F21A30C390014E671 /* SwiftProtobuf.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5E13807921A307CA004A646C /* SwiftProtobuf.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -70,8 +68,6 @@
 		54B5E1F71F0A6B77001F43A6 /* warnings-debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "warnings-debug.xcconfig"; sourceTree = "<group>"; };
 		54B5E1F81F0A6B77001F43A6 /* warnings.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = warnings.xcconfig; sourceTree = "<group>"; };
 		5E13807921A307CA004A646C /* SwiftProtobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftProtobuf.framework; path = Carthage/Build/iOS/SwiftProtobuf.framework; sourceTree = "<group>"; };
-		5E13807B21A30A9D004A646C /* messages.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messages.pb.swift; sourceTree = "<group>"; };
-		5E13807C21A30A9D004A646C /* otr.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = otr.pb.swift; sourceTree = "<group>"; };
 		5E13807F21A30AB7004A646C /* ProtosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtosTests.swift; sourceTree = "<group>"; };
 		F184BE851E65CADA0020EBB7 /* Cartfile.resolved */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile.resolved; sourceTree = "<group>"; };
 		F1FDF2DF21B043F400E037A1 /* WireProtos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WireProtos.h; sourceTree = "<group>"; };
@@ -135,8 +131,6 @@
 				F1FDF2E321B04C1100E037A1 /* Otr.pb.m */,
 				090838241B87347900629095 /* messages.proto */,
 				099223A61BED06E400668091 /* otr.proto */,
-				5E13807B21A30A9D004A646C /* messages.pb.swift */,
-				5E13807C21A30A9D004A646C /* otr.pb.swift */,
 				F1FDF2DF21B043F400E037A1 /* WireProtos.h */,
 				090838011B872DBF00629095 /* Supporting Files */,
 			);
@@ -290,6 +284,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 090837F41B872DBF00629095;
@@ -327,9 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1FDF2E921B04C1200E037A1 /* Messages.pb.m in Sources */,
-				5E13807E21A30A9D004A646C /* otr.pb.swift in Sources */,
 				F1FDF2E721B04C1200E037A1 /* Otr.pb.m in Sources */,
-				5E13807D21A30A9D004A646C /* messages.pb.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,7 +398,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 54B5E1F61F0A6B77001F43A6 /* test-target.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = ProtosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -420,7 +412,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 54B5E1F61F0A6B77001F43A6 /* test-target.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = ProtosTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
