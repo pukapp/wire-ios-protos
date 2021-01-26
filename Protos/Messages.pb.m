@@ -102,7 +102,7 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
 @property (strong) ZMAvailability* availability;
 @property (strong) ZMTextJson* textJson;
 @property (strong) ZMForbid* forbid;
-@property (strong) ZMMediasoup* mediasoup;
+@property (strong) NS_RETURNS_NOT_RETAINED ZMNewCalling* newCalling;
 @end
 
 @implementation ZMGenericMessage
@@ -247,13 +247,13 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
   hasForbid_ = !!_value_;
 }
 @synthesize forbid;
-- (BOOL) hasMediasoup {
-  return !!hasMediasoup_;
+- (BOOL) hasNewCalling {
+  return !!hasNewCalling_;
 }
-- (void) setHasMediasoup:(BOOL) _value_ {
-  hasMediasoup_ = !!_value_;
+- (void) setHasNewCalling:(BOOL) _value_ {
+  hasNewCalling_ = !!_value_;
 }
-@synthesize mediasoup;
+@synthesize newCalling;
 - (instancetype) init {
   if ((self = [super init])) {
     self.messageId = @"";
@@ -276,7 +276,7 @@ NSString *NSStringFromZMLegalHoldStatus(ZMLegalHoldStatus value) {
     self.availability = [ZMAvailability defaultInstance];
     self.textJson = [ZMTextJson defaultInstance];
     self.forbid = [ZMForbid defaultInstance];
-    self.mediasoup = [ZMMediasoup defaultInstance];
+    self.newCalling = [ZMNewCalling defaultInstance];
   }
   return self;
 }
@@ -386,8 +386,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       return NO;
     }
   }
-  if (self.hasMediasoup) {
-    if (!self.mediasoup.isInitialized) {
+  if (self.hasNewCalling) {
+    if (!self.newCalling.isInitialized) {
       return NO;
     }
   }
@@ -454,8 +454,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasForbid) {
     [output writeMessage:101 value:self.forbid];
   }
-  if (self.hasMediasoup) {
-    [output writeMessage:102 value:self.mediasoup];
+  if (self.hasNewCalling) {
+    [output writeMessage:102 value:self.newCalling];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -526,8 +526,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasForbid) {
     size_ += computeMessageSize(101, self.forbid);
   }
-  if (self.hasMediasoup) {
-    size_ += computeMessageSize(102, self.mediasoup);
+  if (self.hasNewCalling) {
+    size_ += computeMessageSize(102, self.newCalling);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -678,9 +678,9 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
-  if (self.hasMediasoup) {
-    [output appendFormat:@"%@%@ {\n", indent, @"mediasoup"];
-    [self.mediasoup writeDescriptionTo:output
+  if (self.hasNewCalling) {
+    [output appendFormat:@"%@%@ {\n", indent, @"newCalling"];
+    [self.newCalling writeDescriptionTo:output
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
@@ -783,10 +783,10 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
    [self.forbid storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"forbid"];
   }
-  if (self.hasMediasoup) {
+  if (self.hasNewCalling) {
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
-   [self.mediasoup storeInDictionary:messageDictionary];
-   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"mediasoup"];
+   [self.newCalling storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"newCalling"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -839,8 +839,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
       (!self.hasAvailability || [self.availability isEqual:otherMessage.availability]) &&
       self.hasForbid == otherMessage.hasForbid &&
       (!self.hasForbid || [self.forbid isEqual:otherMessage.forbid]) &&
-      self.hasMediasoup == otherMessage.hasMediasoup &&
-      (!self.hasMediasoup || [self.mediasoup isEqual:otherMessage.mediasoup]) &&
+      self.hasNewCalling == otherMessage.hasNewCalling &&
+      (!self.hasNewCalling || [self.newCalling isEqual:otherMessage.newCalling]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -905,8 +905,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (self.hasForbid) {
     hashCode = hashCode * 31 + [self.forbid hash];
   }
-  if (self.hasMediasoup) {
-    hashCode = hashCode * 31 + [self.mediasoup hash];
+  if (self.hasNewCalling) {
+    hashCode = hashCode * 31 + [self.newCalling hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1011,8 +1011,8 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   if (other.hasForbid) {
     [self mergeForbid:other.forbid];
   }
-  if (other.hasMediasoup) {
-    [self mergeMediasoup:other.mediasoup];
+  if (other.hasNewCalling) {
+    [self mergeNewCalling:other.newCalling];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1211,12 +1211,12 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
         break;
       }
       case 818: {
-        ZMMediasoupBuilder* subBuilder = [ZMMediasoup builder];
-        if (self.hasMediasoup) {
-          [subBuilder mergeFrom:self.mediasoup];
+        ZMNewCallingBuilder* subBuilder = [ZMNewCalling builder];
+        if (self.hasNewCalling) {
+          [subBuilder mergeFrom:self.newCalling];
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-        [self setMediasoup:[subBuilder buildPartial]];
+        [self setNewCalling:[subBuilder buildPartial]];
         break;
       }
     }
@@ -1794,34 +1794,34 @@ static ZMGenericMessage* defaultZMGenericMessageInstance = nil;
   resultGenericMessage.forbid = [ZMForbid defaultInstance];
   return self;
 }
-- (BOOL) hasMediasoup {
-  return resultGenericMessage.hasMediasoup;
+- (BOOL) hasNewCalling {
+  return resultGenericMessage.hasNewCalling;
 }
-- (ZMMediasoup*) mediasoup {
-  return resultGenericMessage.mediasoup;
+- (ZMNewCalling*) newCalling {
+  return resultGenericMessage.newCalling;
 }
-- (ZMGenericMessageBuilder*) setMediasoup:(ZMMediasoup*) value {
-  resultGenericMessage.hasMediasoup = YES;
-  resultGenericMessage.mediasoup = value;
+- (ZMGenericMessageBuilder*) setNewCalling:(ZMNewCalling*) value {
+  resultGenericMessage.hasNewCalling = YES;
+  resultGenericMessage.newCalling = value;
   return self;
 }
-- (ZMGenericMessageBuilder*) setMediasoupBuilder:(ZMMediasoupBuilder*) builderForValue {
-  return [self setMediasoup:[builderForValue build]];
+- (ZMGenericMessageBuilder*) setNewCallingBuilder:(ZMNewCallingBuilder*) builderForValue {
+  return [self setNewCalling:[builderForValue build]];
 }
-- (ZMGenericMessageBuilder*) mergeMediasoup:(ZMMediasoup*) value {
-  if (resultGenericMessage.hasMediasoup &&
-      resultGenericMessage.mediasoup != [ZMMediasoup defaultInstance]) {
-    resultGenericMessage.mediasoup =
-      [[[ZMMediasoup builderWithPrototype:resultGenericMessage.mediasoup] mergeFrom:value] buildPartial];
+- (ZMGenericMessageBuilder*) mergeNewCalling:(ZMNewCalling*) value {
+  if (resultGenericMessage.hasNewCalling &&
+      resultGenericMessage.newCalling != [ZMNewCalling defaultInstance]) {
+    resultGenericMessage.newCalling =
+      [[[ZMNewCalling builderWithPrototype:resultGenericMessage.newCalling] mergeFrom:value] buildPartial];
   } else {
-    resultGenericMessage.mediasoup = value;
+    resultGenericMessage.newCalling = value;
   }
-  resultGenericMessage.hasMediasoup = YES;
+  resultGenericMessage.hasNewCalling = YES;
   return self;
 }
-- (ZMGenericMessageBuilder*) clearMediasoup {
-  resultGenericMessage.hasMediasoup = NO;
-  resultGenericMessage.mediasoup = [ZMMediasoup defaultInstance];
+- (ZMGenericMessageBuilder*) clearNewCalling {
+  resultGenericMessage.hasNewCalling = NO;
+  resultGenericMessage.newCalling = [ZMNewCalling defaultInstance];
   return self;
 }
 @end
@@ -12435,11 +12435,13 @@ static ZMForbid* defaultZMForbidInstance = nil;
 }
 @end
 
-@interface ZMMediasoup ()
+@interface ZMNewCalling ()
 @property (strong) NSString* content;
+@property BOOL canSynchronizeClients;
+@property (strong) NSString* iosVoipString;
 @end
 
-@implementation ZMMediasoup
+@implementation ZMNewCalling
 
 - (BOOL) hasContent {
   return !!hasContent_;
@@ -12448,26 +12450,50 @@ static ZMForbid* defaultZMForbidInstance = nil;
   hasContent_ = !!_value_;
 }
 @synthesize content;
+- (BOOL) hasCanSynchronizeClients {
+  return !!hasCanSynchronizeClients_;
+}
+- (void) setHasCanSynchronizeClients:(BOOL) _value_ {
+  hasCanSynchronizeClients_ = !!_value_;
+}
+- (BOOL) canSynchronizeClients {
+  return !!canSynchronizeClients_;
+}
+- (void) setCanSynchronizeClients:(BOOL) _value_ {
+  canSynchronizeClients_ = !!_value_;
+}
+- (BOOL) hasIosVoipString {
+  return !!hasIosVoipString_;
+}
+- (void) setHasIosVoipString:(BOOL) _value_ {
+  hasIosVoipString_ = !!_value_;
+}
+@synthesize iosVoipString;
 - (instancetype) init {
   if ((self = [super init])) {
     self.content = @"";
+    self.canSynchronizeClients = YES;
+    self.iosVoipString = @"";
   }
   return self;
 }
-static ZMMediasoup* defaultZMMediasoupInstance = nil;
+static ZMNewCalling* defaultZMNewCallingInstance = nil;
 + (void) initialize {
-  if (self == [ZMMediasoup class]) {
-    defaultZMMediasoupInstance = [[ZMMediasoup alloc] init];
+  if (self == [ZMNewCalling class]) {
+    defaultZMNewCallingInstance = [[ZMNewCalling alloc] init];
   }
 }
 + (instancetype) defaultInstance {
-  return defaultZMMediasoupInstance;
+  return defaultZMNewCallingInstance;
 }
 - (instancetype) defaultInstance {
-  return defaultZMMediasoupInstance;
+  return defaultZMNewCallingInstance;
 }
 - (BOOL) isInitialized {
   if (!self.hasContent) {
+    return NO;
+  }
+  if (!self.hasCanSynchronizeClients) {
     return NO;
   }
   return YES;
@@ -12475,6 +12501,12 @@ static ZMMediasoup* defaultZMMediasoupInstance = nil;
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
   if (self.hasContent) {
     [output writeString:1 value:self.content];
+  }
+  if (self.hasCanSynchronizeClients) {
+    [output writeBool:2 value:self.canSynchronizeClients];
+  }
+  if (self.hasIosVoipString) {
+    [output writeString:3 value:self.iosVoipString];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -12488,43 +12520,55 @@ static ZMMediasoup* defaultZMMediasoupInstance = nil;
   if (self.hasContent) {
     size_ += computeStringSize(1, self.content);
   }
+  if (self.hasCanSynchronizeClients) {
+    size_ += computeBoolSize(2, self.canSynchronizeClients);
+  }
+  if (self.hasIosVoipString) {
+    size_ += computeStringSize(3, self.iosVoipString);
+  }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
   return size_;
 }
-+ (ZMMediasoup*) parseFromData:(NSData*) data {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromData:data] build];
++ (ZMNewCalling*) parseFromData:(NSData*) data {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromData:data] build];
 }
-+ (ZMMediasoup*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
++ (ZMNewCalling*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
 }
-+ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromInputStream:input] build];
++ (ZMNewCalling*) parseFromInputStream:(NSInputStream*) input {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromInputStream:input] build];
 }
-+ (ZMMediasoup*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
++ (ZMNewCalling*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromCodedInputStream:input] build];
++ (ZMNewCalling*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromCodedInputStream:input] build];
 }
-+ (ZMMediasoup*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
-  return (ZMMediasoup*)[[[ZMMediasoup builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
++ (ZMNewCalling*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (ZMNewCalling*)[[[ZMNewCalling builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (ZMMediasoupBuilder*) builder {
-  return [[ZMMediasoupBuilder alloc] init];
++ (ZMNewCallingBuilder*) builder {
+  return [[ZMNewCallingBuilder alloc] init];
 }
-+ (ZMMediasoupBuilder*) builderWithPrototype:(ZMMediasoup*) prototype {
-  return [[ZMMediasoup builder] mergeFrom:prototype];
++ (ZMNewCallingBuilder*) builderWithPrototype:(ZMNewCalling*) prototype {
+  return [[ZMNewCalling builder] mergeFrom:prototype];
 }
-- (ZMMediasoupBuilder*) builder {
-  return [ZMMediasoup builder];
+- (ZMNewCallingBuilder*) builder {
+  return [ZMNewCalling builder];
 }
-- (ZMMediasoupBuilder*) toBuilder {
-  return [ZMMediasoup builderWithPrototype:self];
+- (ZMNewCallingBuilder*) toBuilder {
+  return [ZMNewCalling builderWithPrototype:self];
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
   if (self.hasContent) {
     [output appendFormat:@"%@%@: %@\n", indent, @"content", self.content];
+  }
+  if (self.hasCanSynchronizeClients) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"canSynchronizeClients", [NSNumber numberWithBool:self.canSynchronizeClients]];
+  }
+  if (self.hasIosVoipString) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"iosVoipString", self.iosVoipString];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -12532,19 +12576,29 @@ static ZMMediasoup* defaultZMMediasoupInstance = nil;
   if (self.hasContent) {
     [dictionary setObject: self.content forKey: @"content"];
   }
+  if (self.hasCanSynchronizeClients) {
+    [dictionary setObject: [NSNumber numberWithBool:self.canSynchronizeClients] forKey: @"canSynchronizeClients"];
+  }
+  if (self.hasIosVoipString) {
+    [dictionary setObject: self.iosVoipString forKey: @"iosVoipString"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
   if (other == self) {
     return YES;
   }
-  if (![other isKindOfClass:[ZMMediasoup class]]) {
+  if (![other isKindOfClass:[ZMNewCalling class]]) {
     return NO;
   }
-  ZMMediasoup *otherMessage = other;
+  ZMNewCalling *otherMessage = other;
   return
       self.hasContent == otherMessage.hasContent &&
       (!self.hasContent || [self.content isEqual:otherMessage.content]) &&
+      self.hasCanSynchronizeClients == otherMessage.hasCanSynchronizeClients &&
+      (!self.hasCanSynchronizeClients || self.canSynchronizeClients == otherMessage.canSynchronizeClients) &&
+      self.hasIosVoipString == otherMessage.hasIosVoipString &&
+      (!self.hasIosVoipString || [self.iosVoipString isEqual:otherMessage.iosVoipString]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -12552,59 +12606,71 @@ static ZMMediasoup* defaultZMMediasoupInstance = nil;
   if (self.hasContent) {
     hashCode = hashCode * 31 + [self.content hash];
   }
+  if (self.hasCanSynchronizeClients) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.canSynchronizeClients] hash];
+  }
+  if (self.hasIosVoipString) {
+    hashCode = hashCode * 31 + [self.iosVoipString hash];
+  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
 @end
 
-@interface ZMMediasoupBuilder()
-@property (strong) ZMMediasoup* resultMediasoup;
+@interface ZMNewCallingBuilder()
+@property (strong) ZMNewCalling* resultNewCalling;
 @end
 
-@implementation ZMMediasoupBuilder
-@synthesize resultMediasoup;
+@implementation ZMNewCallingBuilder
+@synthesize resultNewCalling;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.resultMediasoup = [[ZMMediasoup alloc] init];
+    self.resultNewCalling = [[ZMNewCalling alloc] init];
   }
   return self;
 }
 - (PBGeneratedMessage*) internalGetResult {
-  return resultMediasoup;
+  return resultNewCalling;
 }
-- (ZMMediasoupBuilder*) clear {
-  self.resultMediasoup = [[ZMMediasoup alloc] init];
+- (ZMNewCallingBuilder*) clear {
+  self.resultNewCalling = [[ZMNewCalling alloc] init];
   return self;
 }
-- (ZMMediasoupBuilder*) clone {
-  return [ZMMediasoup builderWithPrototype:resultMediasoup];
+- (ZMNewCallingBuilder*) clone {
+  return [ZMNewCalling builderWithPrototype:resultNewCalling];
 }
-- (ZMMediasoup*) defaultInstance {
-  return [ZMMediasoup defaultInstance];
+- (ZMNewCalling*) defaultInstance {
+  return [ZMNewCalling defaultInstance];
 }
-- (ZMMediasoup*) build {
+- (ZMNewCalling*) build {
   [self checkInitialized];
   return [self buildPartial];
 }
-- (ZMMediasoup*) buildPartial {
-  ZMMediasoup* returnMe = resultMediasoup;
-  self.resultMediasoup = nil;
+- (ZMNewCalling*) buildPartial {
+  ZMNewCalling* returnMe = resultNewCalling;
+  self.resultNewCalling = nil;
   return returnMe;
 }
-- (ZMMediasoupBuilder*) mergeFrom:(ZMMediasoup*) other {
-  if (other == [ZMMediasoup defaultInstance]) {
+- (ZMNewCallingBuilder*) mergeFrom:(ZMNewCalling*) other {
+  if (other == [ZMNewCalling defaultInstance]) {
     return self;
   }
   if (other.hasContent) {
     [self setContent:other.content];
   }
+  if (other.hasCanSynchronizeClients) {
+    [self setCanSynchronizeClients:other.canSynchronizeClients];
+  }
+  if (other.hasIosVoipString) {
+    [self setIosVoipString:other.iosVoipString];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
-- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+- (ZMNewCallingBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
   return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
 }
-- (ZMMediasoupBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+- (ZMNewCallingBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
   PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
   while (YES) {
     SInt32 tag = [input readTag];
@@ -12623,23 +12689,63 @@ static ZMMediasoup* defaultZMMediasoupInstance = nil;
         [self setContent:[input readString]];
         break;
       }
+      case 16: {
+        [self setCanSynchronizeClients:[input readBool]];
+        break;
+      }
+      case 26: {
+        [self setIosVoipString:[input readString]];
+        break;
+      }
     }
   }
 }
 - (BOOL) hasContent {
-  return resultMediasoup.hasContent;
+  return resultNewCalling.hasContent;
 }
 - (NSString*) content {
-  return resultMediasoup.content;
+  return resultNewCalling.content;
 }
-- (ZMMediasoupBuilder*) setContent:(NSString*) value {
-  resultMediasoup.hasContent = YES;
-  resultMediasoup.content = value;
+- (ZMNewCallingBuilder*) setContent:(NSString*) value {
+  resultNewCalling.hasContent = YES;
+  resultNewCalling.content = value;
   return self;
 }
-- (ZMMediasoupBuilder*) clearContent {
-  resultMediasoup.hasContent = NO;
-  resultMediasoup.content = @"";
+- (ZMNewCallingBuilder*) clearContent {
+  resultNewCalling.hasContent = NO;
+  resultNewCalling.content = @"";
+  return self;
+}
+- (BOOL) hasCanSynchronizeClients {
+  return resultNewCalling.hasCanSynchronizeClients;
+}
+- (BOOL) canSynchronizeClients {
+  return resultNewCalling.canSynchronizeClients;
+}
+- (ZMNewCallingBuilder*) setCanSynchronizeClients:(BOOL) value {
+  resultNewCalling.hasCanSynchronizeClients = YES;
+  resultNewCalling.canSynchronizeClients = value;
+  return self;
+}
+- (ZMNewCallingBuilder*) clearCanSynchronizeClients {
+  resultNewCalling.hasCanSynchronizeClients = NO;
+  resultNewCalling.canSynchronizeClients = YES;
+  return self;
+}
+- (BOOL) hasIosVoipString {
+  return resultNewCalling.hasIosVoipString;
+}
+- (NSString*) iosVoipString {
+  return resultNewCalling.iosVoipString;
+}
+- (ZMNewCallingBuilder*) setIosVoipString:(NSString*) value {
+  resultNewCalling.hasIosVoipString = YES;
+  resultNewCalling.iosVoipString = value;
+  return self;
+}
+- (ZMNewCallingBuilder*) clearIosVoipString {
+  resultNewCalling.hasIosVoipString = NO;
+  resultNewCalling.iosVoipString = @"";
   return self;
 }
 @end

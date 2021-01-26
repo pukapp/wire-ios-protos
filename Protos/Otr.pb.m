@@ -1041,11 +1041,7 @@ static ZMUserEntry* defaultZMUserEntryInstance = nil;
 @property BOOL nativePush;
 @property (strong) NSData* blob;
 @property BOOL unblock;
-@property BOOL video;
-@property (strong) NSString* callUserId;
-@property (strong) NSString* callUserName;
-@property (strong) NSString* callConversationId;
-@property (strong) NSString* callType;
+@property (strong) NSString* iosVoip;
 @end
 
 @implementation ZMNewOtrMessage
@@ -1090,57 +1086,20 @@ static ZMUserEntry* defaultZMUserEntryInstance = nil;
 - (void) setUnblock:(BOOL) _value_ {
   unblock_ = !!_value_;
 }
-- (BOOL) hasVideo {
-  return !!hasVideo_;
+- (BOOL) hasIosVoip {
+  return !!hasIosVoip_;
 }
-- (void) setHasVideo:(BOOL) _value_ {
-  hasVideo_ = !!_value_;
+- (void) setHasIosVoip:(BOOL) _value_ {
+  hasIosVoip_ = !!_value_;
 }
-- (BOOL) video {
-  return !!video_;
-}
-- (void) setVideo:(BOOL) _value_ {
-  video_ = !!_value_;
-}
-- (BOOL) hasCallUserId {
-  return !!hasCallUserId_;
-}
-- (void) setHasCallUserId:(BOOL) _value_ {
-  hasCallUserId_ = !!_value_;
-}
-@synthesize callUserId;
-- (BOOL) hasCallUserName {
-  return !!hasCallUserName_;
-}
-- (void) setHasCallUserName:(BOOL) _value_ {
-  hasCallUserName_ = !!_value_;
-}
-@synthesize callUserName;
-- (BOOL) hasCallConversationId {
-  return !!hasCallConversationId_;
-}
-- (void) setHasCallConversationId:(BOOL) _value_ {
-  hasCallConversationId_ = !!_value_;
-}
-@synthesize callConversationId;
-- (BOOL) hasCallType {
-  return !!hasCallType_;
-}
-- (void) setHasCallType:(BOOL) _value_ {
-  hasCallType_ = !!_value_;
-}
-@synthesize callType;
+@synthesize iosVoip;
 - (instancetype) init {
   if ((self = [super init])) {
     self.sender = [ZMClientId defaultInstance];
     self.nativePush = YES;
     self.blob = [NSData data];
     self.unblock = NO;
-    self.video = NO;
-    self.callUserId = @"";
-    self.callUserName = @"";
-    self.callConversationId = @"";
-    self.callType = @"";
+    self.iosVoip = @"";
   }
   return self;
 }
@@ -1195,20 +1154,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [output writeBool:100 value:self.unblock];
   }
-  if (self.hasVideo) {
-    [output writeBool:101 value:self.video];
-  }
-  if (self.hasCallUserId) {
-    [output writeString:102 value:self.callUserId];
-  }
-  if (self.hasCallUserName) {
-    [output writeString:103 value:self.callUserName];
-  }
-  if (self.hasCallConversationId) {
-    [output writeString:104 value:self.callConversationId];
-  }
-  if (self.hasCallType) {
-    [output writeString:105 value:self.callType];
+  if (self.hasIosVoip) {
+    [output writeString:106 value:self.iosVoip];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -1234,20 +1181,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     size_ += computeBoolSize(100, self.unblock);
   }
-  if (self.hasVideo) {
-    size_ += computeBoolSize(101, self.video);
-  }
-  if (self.hasCallUserId) {
-    size_ += computeStringSize(102, self.callUserId);
-  }
-  if (self.hasCallUserName) {
-    size_ += computeStringSize(103, self.callUserName);
-  }
-  if (self.hasCallConversationId) {
-    size_ += computeStringSize(104, self.callConversationId);
-  }
-  if (self.hasCallType) {
-    size_ += computeStringSize(105, self.callType);
+  if (self.hasIosVoip) {
+    size_ += computeStringSize(106, self.iosVoip);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -1305,20 +1240,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [output appendFormat:@"%@%@: %@\n", indent, @"unblock", [NSNumber numberWithBool:self.unblock]];
   }
-  if (self.hasVideo) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"video", [NSNumber numberWithBool:self.video]];
-  }
-  if (self.hasCallUserId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"callUserId", self.callUserId];
-  }
-  if (self.hasCallUserName) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"callUserName", self.callUserName];
-  }
-  if (self.hasCallConversationId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"callConversationId", self.callConversationId];
-  }
-  if (self.hasCallType) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"callType", self.callType];
+  if (self.hasIosVoip) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"iosVoip", self.iosVoip];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -1342,20 +1265,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     [dictionary setObject: [NSNumber numberWithBool:self.unblock] forKey: @"unblock"];
   }
-  if (self.hasVideo) {
-    [dictionary setObject: [NSNumber numberWithBool:self.video] forKey: @"video"];
-  }
-  if (self.hasCallUserId) {
-    [dictionary setObject: self.callUserId forKey: @"callUserId"];
-  }
-  if (self.hasCallUserName) {
-    [dictionary setObject: self.callUserName forKey: @"callUserName"];
-  }
-  if (self.hasCallConversationId) {
-    [dictionary setObject: self.callConversationId forKey: @"callConversationId"];
-  }
-  if (self.hasCallType) {
-    [dictionary setObject: self.callType forKey: @"callType"];
+  if (self.hasIosVoip) {
+    [dictionary setObject: self.iosVoip forKey: @"iosVoip"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -1377,16 +1288,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
       (!self.hasBlob || [self.blob isEqual:otherMessage.blob]) &&
       self.hasUnblock == otherMessage.hasUnblock &&
       (!self.hasUnblock || self.unblock == otherMessage.unblock) &&
-      self.hasVideo == otherMessage.hasVideo &&
-      (!self.hasVideo || self.video == otherMessage.video) &&
-      self.hasCallUserId == otherMessage.hasCallUserId &&
-      (!self.hasCallUserId || [self.callUserId isEqual:otherMessage.callUserId]) &&
-      self.hasCallUserName == otherMessage.hasCallUserName &&
-      (!self.hasCallUserName || [self.callUserName isEqual:otherMessage.callUserName]) &&
-      self.hasCallConversationId == otherMessage.hasCallConversationId &&
-      (!self.hasCallConversationId || [self.callConversationId isEqual:otherMessage.callConversationId]) &&
-      self.hasCallType == otherMessage.hasCallType &&
-      (!self.hasCallType || [self.callType isEqual:otherMessage.callType]) &&
+      self.hasIosVoip == otherMessage.hasIosVoip &&
+      (!self.hasIosVoip || [self.iosVoip isEqual:otherMessage.iosVoip]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -1406,20 +1309,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (self.hasUnblock) {
     hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.unblock] hash];
   }
-  if (self.hasVideo) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.video] hash];
-  }
-  if (self.hasCallUserId) {
-    hashCode = hashCode * 31 + [self.callUserId hash];
-  }
-  if (self.hasCallUserName) {
-    hashCode = hashCode * 31 + [self.callUserName hash];
-  }
-  if (self.hasCallConversationId) {
-    hashCode = hashCode * 31 + [self.callConversationId hash];
-  }
-  if (self.hasCallType) {
-    hashCode = hashCode * 31 + [self.callType hash];
+  if (self.hasIosVoip) {
+    hashCode = hashCode * 31 + [self.iosVoip hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -1483,20 +1374,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   if (other.hasUnblock) {
     [self setUnblock:other.unblock];
   }
-  if (other.hasVideo) {
-    [self setVideo:other.video];
-  }
-  if (other.hasCallUserId) {
-    [self setCallUserId:other.callUserId];
-  }
-  if (other.hasCallUserName) {
-    [self setCallUserName:other.callUserName];
-  }
-  if (other.hasCallConversationId) {
-    [self setCallConversationId:other.callConversationId];
-  }
-  if (other.hasCallType) {
-    [self setCallType:other.callType];
+  if (other.hasIosVoip) {
+    [self setIosVoip:other.iosVoip];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -1546,24 +1425,8 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
         [self setUnblock:[input readBool]];
         break;
       }
-      case 808: {
-        [self setVideo:[input readBool]];
-        break;
-      }
-      case 818: {
-        [self setCallUserId:[input readString]];
-        break;
-      }
-      case 826: {
-        [self setCallUserName:[input readString]];
-        break;
-      }
-      case 834: {
-        [self setCallConversationId:[input readString]];
-        break;
-      }
-      case 842: {
-        [self setCallType:[input readString]];
+      case 850: {
+        [self setIosVoip:[input readString]];
         break;
       }
     }
@@ -1668,84 +1531,20 @@ static ZMNewOtrMessage* defaultZMNewOtrMessageInstance = nil;
   resultNewOtrMessage.unblock = NO;
   return self;
 }
-- (BOOL) hasVideo {
-  return resultNewOtrMessage.hasVideo;
+- (BOOL) hasIosVoip {
+  return resultNewOtrMessage.hasIosVoip;
 }
-- (BOOL) video {
-  return resultNewOtrMessage.video;
+- (NSString*) iosVoip {
+  return resultNewOtrMessage.iosVoip;
 }
-- (ZMNewOtrMessageBuilder*) setVideo:(BOOL) value {
-  resultNewOtrMessage.hasVideo = YES;
-  resultNewOtrMessage.video = value;
+- (ZMNewOtrMessageBuilder*) setIosVoip:(NSString*) value {
+  resultNewOtrMessage.hasIosVoip = YES;
+  resultNewOtrMessage.iosVoip = value;
   return self;
 }
-- (ZMNewOtrMessageBuilder*) clearVideo {
-  resultNewOtrMessage.hasVideo = NO;
-  resultNewOtrMessage.video = NO;
-  return self;
-}
-- (BOOL) hasCallUserId {
-  return resultNewOtrMessage.hasCallUserId;
-}
-- (NSString*) callUserId {
-  return resultNewOtrMessage.callUserId;
-}
-- (ZMNewOtrMessageBuilder*) setCallUserId:(NSString*) value {
-  resultNewOtrMessage.hasCallUserId = YES;
-  resultNewOtrMessage.callUserId = value;
-  return self;
-}
-- (ZMNewOtrMessageBuilder*) clearCallUserId {
-  resultNewOtrMessage.hasCallUserId = NO;
-  resultNewOtrMessage.callUserId = @"";
-  return self;
-}
-- (BOOL) hasCallUserName {
-  return resultNewOtrMessage.hasCallUserName;
-}
-- (NSString*) callUserName {
-  return resultNewOtrMessage.callUserName;
-}
-- (ZMNewOtrMessageBuilder*) setCallUserName:(NSString*) value {
-  resultNewOtrMessage.hasCallUserName = YES;
-  resultNewOtrMessage.callUserName = value;
-  return self;
-}
-- (ZMNewOtrMessageBuilder*) clearCallUserName {
-  resultNewOtrMessage.hasCallUserName = NO;
-  resultNewOtrMessage.callUserName = @"";
-  return self;
-}
-- (BOOL) hasCallConversationId {
-  return resultNewOtrMessage.hasCallConversationId;
-}
-- (NSString*) callConversationId {
-  return resultNewOtrMessage.callConversationId;
-}
-- (ZMNewOtrMessageBuilder*) setCallConversationId:(NSString*) value {
-  resultNewOtrMessage.hasCallConversationId = YES;
-  resultNewOtrMessage.callConversationId = value;
-  return self;
-}
-- (ZMNewOtrMessageBuilder*) clearCallConversationId {
-  resultNewOtrMessage.hasCallConversationId = NO;
-  resultNewOtrMessage.callConversationId = @"";
-  return self;
-}
-- (BOOL) hasCallType {
-  return resultNewOtrMessage.hasCallType;
-}
-- (NSString*) callType {
-  return resultNewOtrMessage.callType;
-}
-- (ZMNewOtrMessageBuilder*) setCallType:(NSString*) value {
-  resultNewOtrMessage.hasCallType = YES;
-  resultNewOtrMessage.callType = value;
-  return self;
-}
-- (ZMNewOtrMessageBuilder*) clearCallType {
-  resultNewOtrMessage.hasCallType = NO;
-  resultNewOtrMessage.callType = @"";
+- (ZMNewOtrMessageBuilder*) clearIosVoip {
+  resultNewOtrMessage.hasIosVoip = NO;
+  resultNewOtrMessage.iosVoip = @"";
   return self;
 }
 @end

@@ -298,29 +298,17 @@
 #define NewOtrMessage_native_push @"nativePush"
 #define NewOtrMessage_blob @"blob"
 #define NewOtrMessage_unblock @"unblock"
-#define NewOtrMessage_video @"video"
-#define NewOtrMessage_call_user_id @"callUserId"
-#define NewOtrMessage_call_user_name @"callUserName"
-#define NewOtrMessage_call_conversation_id @"callConversationId"
-#define NewOtrMessage_call_type @"callType"
+#define NewOtrMessage_ios_voip @"iosVoip"
 @interface ZMNewOtrMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasNativePush_:1;
   BOOL hasUnblock_:1;
-  BOOL hasVideo_:1;
-  BOOL hasCallUserId_:1;
-  BOOL hasCallUserName_:1;
-  BOOL hasCallConversationId_:1;
-  BOOL hasCallType_:1;
+  BOOL hasIosVoip_:1;
   BOOL hasSender_:1;
   BOOL hasBlob_:1;
   BOOL nativePush_:1;
   BOOL unblock_:1;
-  BOOL video_:1;
-  NSString* callUserId;
-  NSString* callUserName;
-  NSString* callConversationId;
-  NSString* callType;
+  NSString* iosVoip;
   ZMClientId* sender;
   NSData* blob;
   NSMutableArray * recipientsArray;
@@ -329,21 +317,13 @@
 - (BOOL) hasNativePush;
 - (BOOL) hasBlob;
 - (BOOL) hasUnblock;
-- (BOOL) hasVideo;
-- (BOOL) hasCallUserId;
-- (BOOL) hasCallUserName;
-- (BOOL) hasCallConversationId;
-- (BOOL) hasCallType;
+- (BOOL) hasIosVoip;
 @property (readonly, strong) ZMClientId* sender;
 @property (readonly, strong) NSArray<ZMUserEntry*> * recipients;
 - (BOOL) nativePush;
 @property (readonly, strong) NSData* blob;
 - (BOOL) unblock;
-- (BOOL) video;
-@property (readonly, strong) NSString* callUserId;
-@property (readonly, strong) NSString* callUserName;
-@property (readonly, strong) NSString* callConversationId;
-@property (readonly, strong) NSString* callType;
+@property (readonly, strong) NSString* iosVoip;
 - (ZMUserEntry*)recipientsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -409,30 +389,10 @@
 - (ZMNewOtrMessageBuilder*) setUnblock:(BOOL) value;
 - (ZMNewOtrMessageBuilder*) clearUnblock;
 
-- (BOOL) hasVideo;
-- (BOOL) video;
-- (ZMNewOtrMessageBuilder*) setVideo:(BOOL) value;
-- (ZMNewOtrMessageBuilder*) clearVideo;
-
-- (BOOL) hasCallUserId;
-- (NSString*) callUserId;
-- (ZMNewOtrMessageBuilder*) setCallUserId:(NSString*) value;
-- (ZMNewOtrMessageBuilder*) clearCallUserId;
-
-- (BOOL) hasCallUserName;
-- (NSString*) callUserName;
-- (ZMNewOtrMessageBuilder*) setCallUserName:(NSString*) value;
-- (ZMNewOtrMessageBuilder*) clearCallUserName;
-
-- (BOOL) hasCallConversationId;
-- (NSString*) callConversationId;
-- (ZMNewOtrMessageBuilder*) setCallConversationId:(NSString*) value;
-- (ZMNewOtrMessageBuilder*) clearCallConversationId;
-
-- (BOOL) hasCallType;
-- (NSString*) callType;
-- (ZMNewOtrMessageBuilder*) setCallType:(NSString*) value;
-- (ZMNewOtrMessageBuilder*) clearCallType;
+- (BOOL) hasIosVoip;
+- (NSString*) iosVoip;
+- (ZMNewOtrMessageBuilder*) setIosVoip:(NSString*) value;
+- (ZMNewOtrMessageBuilder*) clearIosVoip;
 @end
 
 #define OtrAssetMeta_sender @"sender"
