@@ -12493,9 +12493,6 @@ static ZMNewCalling* defaultZMNewCallingInstance = nil;
   if (!self.hasContent) {
     return NO;
   }
-  if (!self.hasCanSynchronizeClients) {
-    return NO;
-  }
   return YES;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
